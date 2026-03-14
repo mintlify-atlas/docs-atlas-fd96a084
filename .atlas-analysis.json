@@ -1,0 +1,132 @@
+{
+  "projectType": "sdk-library",
+  "projectName": "Minescript Scripts",
+  "projectDescription": "A collection of Python scripts and libraries for the Minescript mod, featuring Minescript Plus API extension, world rendering utilities, and helper modules.",
+  "theme": "palm",
+  "primaryColor": "#57A64E",
+  "lightColor": "#6BBF59",
+  "darkColor": "#3D8B40",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "installation",
+              "quickstart"
+            ]
+          },
+          {
+            "group": "Minescript Plus",
+            "pages": [
+              "minescript-plus/overview",
+              "minescript-plus/inventory",
+              "minescript-plus/screen",
+              "minescript-plus/gui",
+              "minescript-plus/key",
+              "minescript-plus/client",
+              "minescript-plus/player",
+              "minescript-plus/server",
+              "minescript-plus/world",
+              "minescript-plus/trading",
+              "minescript-plus/hud",
+              "minescript-plus/util",
+              "minescript-plus/events",
+              "minescript-plus/keybind"
+            ]
+          },
+          {
+            "group": "WorldRender",
+            "pages": [
+              "worldrender/overview",
+              "worldrender/shapes",
+              "worldrender/text",
+              "worldrender/examples"
+            ]
+          },
+          {
+            "group": "Libraries",
+            "pages": [
+              "libraries/config-lib",
+              "libraries/snbt-parser",
+              "libraries/glfw-keycodes",
+              "libraries/lib-screen"
+            ]
+          },
+          {
+            "group": "Scripts",
+            "pages": [
+              "scripts/scanner",
+              "scripts/discord-webhook",
+              "scripts/gui"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Examples",
+        "groups": [
+          {
+            "group": "Tutorials",
+            "pages": [
+              "examples/basic-usage",
+              "examples/inventory-management",
+              "examples/world-rendering",
+              "examples/event-handling"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "Minescript Plus API - Feature-rich API extension for Minescript mod",
+    "Inventory Management - Click, shift-click, swap items in containers",
+    "Screen & GUI - Manipulate titles, subtitles, actionbars, and screens",
+    "World Interaction - Read/write signs, find entities, track block destruction",
+    "Player & Server Info - Get game mode, latency, food level, tablist data",
+    "Trading System - Interact with villager trading screens",
+    "HUD Rendering - Display custom text and items on the HUD (requires Fabric API)",
+    "WorldRender - Render boxes, blocks, text, points, lines, arrows, circles in-world",
+    "Event System - Listen for title, subtitle, actionbar, and screen events",
+    "Keybind System - Register custom keybinds with callbacks",
+    "Config Library - JSON-backed configuration with attribute-style access",
+    "SNBT Parser - Parse and manipulate Minecraft NBT data"
+  ],
+  "publicApiSurface": [
+    "Inventory.click_slot()",
+    "Inventory.shift_click_slot()",
+    "Inventory.find_item()",
+    "Screen.wait_screen()",
+    "Screen.close_screen()",
+    "Gui.get_title()",
+    "Gui.set_title()",
+    "Gui.get_actionbar()",
+    "Key.press_key()",
+    "Client.disconnect()",
+    "Client.get_options()",
+    "Player.get_game_mode()",
+    "Player.get_food_level()",
+    "Server.get_tablist()",
+    "Server.get_ping()",
+    "World.get_sign_text()",
+    "World.set_sign_text()",
+    "World.find_nearest_entity()",
+    "Trading.get_offers()",
+    "Trading.trade_offer()",
+    "Hud.add_text()",
+    "Hud.add_item()",
+    "Util.get_light_level()",
+    "Util.play_sound()",
+    "Event.register()",
+    "Keybind.set_keybind()",
+    "WorldRender.add_box()",
+    "WorldRender.add_text()",
+    "WorldRender.add_line()",
+    "Config()",
+    "ConfigNode"
+  ]
+}
