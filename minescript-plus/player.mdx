@@ -1,0 +1,248 @@
+---
+title: Player
+description: Player information and state management
+icon: user
+---
+
+The `Player` class provides methods for retrieving player information and state.
+
+<Note>
+  The Player class can be instantiated to get direct access to the player instance: `player = Player()`
+</Note>
+
+## get_latency
+
+Retrieves the player's network latency (ping).
+
+**Returns:** `int` - The latency in milliseconds.
+
+**Source:** `minescript_plus.py:878`
+
+```python
+import minescript_plus as ms
+
+latency = ms.Player.get_latency()
+print(f"Ping: {latency}ms")
+```
+
+## get_game_mode
+
+Retrieves the current game mode of the player.
+
+**Returns:** `str` - The game mode name ("survival", "creative", "adventure", "spectator").
+
+**Source:** `minescript_plus.py:883`
+
+```python
+import minescript_plus as ms
+
+mode = ms.Player.get_game_mode()
+print(f"Game mode: {mode}")
+```
+
+## is_creative
+
+Checks if the player is in creative mode.
+
+**Returns:** `bool` - True if in creative mode, False otherwise.
+
+**Source:** `minescript_plus.py:894`
+
+```python
+import minescript_plus as ms
+
+if ms.Player.is_creative():
+    print("Player is in creative mode")
+else:
+    print("Player is not in creative mode")
+```
+
+## is_survival
+
+Checks if the player is in survival mode.
+
+**Returns:** `bool` - True if in survival mode, False otherwise.
+
+**Source:** `minescript_plus.py:905`
+
+```python
+import minescript_plus as ms
+
+if ms.Player.is_survival():
+    print("Player is in survival mode")
+else:
+    print("Player is not in survival mode")
+```
+
+## get_skin_url
+
+Retrieves the URL of the player's skin texture.
+
+**Returns:** `str` - The URL of the player's skin.
+
+**Source:** `minescript_plus.py:916`
+
+```python
+import minescript_plus as ms
+
+skin_url = ms.Player.get_skin_url()
+print(f"Skin URL: {skin_url}")
+```
+
+## get_food_level
+
+Retrieves the player's current food level.
+
+**Returns:** `float` - The current food level (0-20).
+
+**Source:** `minescript_plus.py:927`
+
+```python
+import minescript_plus as ms
+
+food = ms.Player.get_food_level()
+print(f"Food level: {food}/20")
+```
+
+## get_saturation_level
+
+Retrieves the player's current saturation level.
+
+**Returns:** `float` - The current saturation level.
+
+**Source:** `minescript_plus.py:938`
+
+```python
+import minescript_plus as ms
+
+saturation = ms.Player.get_saturation_level()
+print(f"Saturation: {saturation}")
+```
+
+## get_player_block_position
+
+Returns the player's current block position as a list of integers.
+
+**Returns:** `list[int]` - The [x, y, z] coordinates of the player's block position.
+
+**Source:** `minescript_plus.py:949`
+
+```python
+import minescript_plus as ms
+
+pos = ms.Player.get_player_block_position()
+print(f"Player is at block: {pos[0]}, {pos[1]}, {pos[2]}")
+```
+
+<Tip>
+  This method uses `floor()` to convert the player's exact position to block coordinates.
+</Tip>
+
+## get_xp_levels
+
+Returns the player's current XP levels.
+
+**Returns:** `int` - The player's XP levels (same as `/xp query @s levels`).
+
+**Source:** `minescript_plus.py:963`
+
+```python
+import minescript_plus as ms
+
+levels = ms.Player.get_xp_levels()
+print(f"XP Levels: {levels}")
+```
+
+## get_experience_progress
+
+Returns the player's current XP progress (XP bar percentage).
+
+**Returns:** `float` - The XP bar progress (0.0 to 1.0).
+
+**Source:** `minescript_plus.py:973`
+
+```python
+import minescript_plus as ms
+
+progress = ms.Player.get_experience_progress()
+print(f"XP Progress: {progress * 100:.1f}%")
+```
+
+## Access Player Instance
+
+```python
+import minescript_plus as ms
+
+# Get direct access to player instance
+player = ms.Player()
+
+# Access player properties
+health = player.getHealth()
+hunger = player.getFoodData().getFoodLevel()
+
+print(f"Health: {health}")
+print(f"Hunger: {hunger}")
+```
+
+## Complete Example: Player Status Display
+
+```python
+import minescript_plus as ms
+
+def display_player_status():
+    """Display comprehensive player status."""
+    
+    # Game mode
+    mode = ms.Player.get_game_mode()
+    
+    # Position
+    pos = ms.Player.get_player_block_position()
+    
+    # Food and saturation
+    food = ms.Player.get_food_level()
+    saturation = ms.Player.get_saturation_level()
+    
+    # XP
+    levels = ms.Player.get_xp_levels()
+    progress = ms.Player.get_experience_progress()
+    
+    # Network
+    latency = ms.Player.get_latency()
+    
+    print("=== Player Status ===")
+    print(f"Game Mode: {mode}")
+    print(f"Position: {pos[0]}, {pos[1]}, {pos[2]}")
+    print(f"Food: {food}/20 (Saturation: {saturation:.1f})")
+    print(f"XP: Level {levels} ({progress * 100:.1f}% to next)")
+    print(f"Latency: {latency}ms")
+
+display_player_status()
+```
+
+## Health and Hunger Monitor
+
+```python
+import minescript_plus as ms
+import time
+
+def monitor_vitals(duration: int = 60):
+    """Monitor player vitals for a duration."""
+    start_time = time.time()
+    
+    while time.time() - start_time < duration:
+        food = ms.Player.get_food_level()
+        
+        # Get health from player instance
+        player = ms.Player()
+        health = player.getHealth()
+        
+        # Warn if low
+        if health < 6:
+            print("⚠️ WARNING: Low health!")
+        if food < 6:
+            print("⚠️ WARNING: Low hunger!")
+        
+        time.sleep(5)
+
+monitor_vitals(60)
+```

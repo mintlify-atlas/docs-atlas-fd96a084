@@ -1,0 +1,380 @@
+---
+title: "World Rendering & HUD"
+description: "Learn how to render custom text and items on the HUD using Minescript Plus"
+---
+
+## Introduction
+
+Minescript Plus provides the `Hud` class for rendering custom text and item displays on your screen. This is perfect for creating custom overlays, health displays, resource counters, and more.
+
+<Warning>
+  The `Hud` class is only available on Fabric. Make sure you're using the Fabric mod loader.
+</Warning>
+
+## Rendering Text on the HUD
+
+<Steps>
+  <Step title="Display basic text">
+    Add text to your HUD at a specific position:
+
+    ```python
+    from minescript_plus import Hud
+
+    # Add white text at position (10, 10)
+    text_id = Hud.add_text("Hello World!", 10, 10)
+    
+    print(f"Text added with ID: {text_id}")
+    ```
+
+    The function returns an index that you can use to update or remove the text later.
+  </Step>
+
+  <Step title="Customize text appearance">
+    Use the optional parameters to style your text:
+
+    ```python
+    from minescript_plus import Hud
+
+    # Add colored, scaled text with shadow
+    text_id = Hud.add_text(
+        text="Critical Health!",
+        x=100,
+        y=50,
+        color=(255, 0, 0),      # Red (RGB)
+        alpha=255,               # Fully opaque
+        scale=2.0,               # Double size
+        shadow=True,             # Add shadow
+        italic=False,
+        underline=False,
+        strikethrough=False,
+        obfsucated=False
+    )
+    ```
+
+    <Info>
+      Color is specified as an RGB tuple: `(red, green, blue)` where each value is 0-255.
+    </Info>
+  </Step>
+
+  <Step title="Position with anchors">
+    Use anchors and justification to position text relative to screen edges:
+
+    ```python
+    from minescript_plus import Hud
+
+    # Top-right corner
+    Hud.add_text(
+        "FPS: 60",
+        x=10, y=10,
+        anchorX=1.0,  # Right edge (0.0 = left, 1.0 = right)
+        anchorY=0.0,  # Top edge (0.0 = top, 1.0 = bottom)
+        justifyX=1.0, # Right-aligned (-1 = left, 1 = right)
+        justifyY=-1.0 # Top-aligned (-1 = top, 1 = bottom)
+    )
+
+    # Bottom-center
+    Hud.add_text(
+        "Action Bar Alternative",
+        x=0, y=-10,
+        anchorX=0.5,  # Center horizontally
+        anchorY=1.0,  # Bottom edge
+        justifyX=0.0, # Center-aligned
+        justifyY=1.0  # Bottom-aligned
+    )
+    ```
+  </Step>
+
+  <Step title="Update text dynamically">
+    Modify existing text using its index:
+
+    ```python
+    from minescript_plus import Hud
+    from time import sleep
+
+    # Add initial text
+    counter_id = Hud.add_text("Count: 0", 10, 10)
+
+    # Update it in a loop
+    for i in range(1, 11):
+        sleep(1)
+        Hud.update_text(
+            counter_id,
+            f"Count: {i}",
+            10, 10
+        )
+
+    # Or just change the string
+    Hud.set_text_string(counter_id, "Done!")
+    ```
+  </Step>
+
+  <Step title="Control text visibility">
+    Show, hide, or remove text:
+
+    ```python
+    from minescript_plus import Hud
+
+    text_id = Hud.add_text("Toggle Me", 10, 10)
+
+    # Hide the text (still exists)
+    Hud.show_text(text_id, False)
+
+    # Show it again
+    Hud.show_text(text_id, True)
+
+    # Remove it completely
+    Hud.remove_text(text_id)
+
+    # Or clear all text
+    Hud.clear_texts()
+    ```
+  </Step>
+</Steps>
+
+## Rendering Items on the HUD
+
+<Steps>
+  <Step title="Display item icons">
+    Render Minecraft items on your HUD:
+
+    ```python
+    from minescript_plus import Hud
+
+    # Display a diamond at position (50, 50)
+    item_id = Hud.add_item(
+        item="minecraft:diamond",
+        x=50,
+        y=50
+    )
+
+    print(f"Item added with ID: {item_id}")
+    ```
+  </Step>
+
+  <Step title="Add item counts">
+    Display a count next to the item:
+
+    ```python
+    from minescript_plus import Hud
+
+    # Show diamond count
+    item_id = Hud.add_item(
+        item="minecraft:diamond",
+        x=50,
+        y=50,
+        count="64",  # Display "64" next to the item
+        scale=1.5
+    )
+
+    # Update the count later
+    Hud.set_item_count(item_id, "32")
+    ```
+  </Step>
+
+  <Step title="Position items with anchors">
+    Like text, items support anchor positioning:
+
+    ```python
+    from minescript_plus import Hud
+
+    # Health hearts in top-left
+    Hud.add_item(
+        item="minecraft:apple",
+        x=10, y=10,
+        count="20",
+        anchorX=0.0,  # Left edge
+        anchorY=0.0,  # Top edge
+        justifyX=-1.0,
+        justifyY=-1.0
+    )
+
+    # Armor in top-right
+    Hud.add_item(
+        item="minecraft:diamond_chestplate",
+        x=-10, y=10,
+        anchorX=1.0,  # Right edge
+        anchorY=0.0,  # Top edge
+        justifyX=1.0,
+        justifyY=-1.0
+    )
+    ```
+  </Step>
+
+  <Step title="Manage item displays">
+    Update, show/hide, or remove items:
+
+    ```python
+    from minescript_plus import Hud
+
+    item_id = Hud.add_item("minecraft:iron_ingot", 100, 100, count="10")
+
+    # Change to gold ingot
+    Hud.set_item_string(item_id, "minecraft:gold_ingot")
+
+    # Update count
+    Hud.set_item_count(item_id, "25")
+
+    # Move position
+    Hud.set_item_position(item_id, 150, 150)
+
+    # Hide item
+    Hud.show_item(item_id, False)
+
+    # Remove item
+    Hud.remove_item(item_id)
+
+    # Clear all items
+    Hud.clear_items()
+    ```
+  </Step>
+</Steps>
+
+## Screen-Specific Rendering
+
+<Steps>
+  <Step title="Render on specific screens">
+    Control which screens display your HUD elements:
+
+    ```python
+    from minescript_plus import Hud
+
+    # Only show on the main game screen
+    Hud.add_text(
+        "In-Game Only",
+        x=10, y=10,
+        screens="minecraft:hud"  # Only on HUD screen
+    )
+
+    # Show on multiple screens
+    Hud.add_text(
+        "Multiple Screens",
+        x=10, y=30,
+        screens=["minecraft:hud", "minecraft:inventory"]
+    )
+
+    # Show on all screens (default)
+    Hud.add_text(
+        "All Screens",
+        x=10, y=50,
+        screens="all"
+    )
+    ```
+  </Step>
+</Steps>
+
+## Complete Example: Resource Monitor
+
+Here's a complete example that displays a resource counter:
+
+```python resource_monitor.py
+import asyncio
+from minescript import player_inventory, tick_loop
+from minescript_plus import Hud
+
+def count_items(item_name: str) -> int:
+    """Count total number of specific item in inventory."""
+    inv = player_inventory()
+    total = 0
+    for item in inv:
+        if item and item.name == item_name:
+            total += item.count
+    return total
+
+async def main():
+    # Create HUD elements
+    title_id = Hud.add_text(
+        "Resource Monitor",
+        x=10, y=10,
+        color=(255, 255, 0),  # Yellow
+        scale=1.2,
+        shadow=True
+    )
+    
+    diamond_icon = Hud.add_item(
+        "minecraft:diamond",
+        x=10, y=30,
+        count="0"
+    )
+    
+    iron_icon = Hud.add_item(
+        "minecraft:iron_ingot",
+        x=10, y=55,
+        count="0"
+    )
+    
+    gold_icon = Hud.add_item(
+        "minecraft:gold_ingot",
+        x=10, y=80,
+        count="0"
+    )
+    
+    # Update loop
+    with tick_loop:
+        for _ in range(200):  # Run for 200 ticks (~10 seconds)
+            # Count resources
+            diamonds = count_items("minecraft:diamond")
+            iron = count_items("minecraft:iron_ingot")
+            gold = count_items("minecraft:gold_ingot")
+            
+            # Update displays
+            Hud.set_item_count(diamond_icon, str(diamonds))
+            Hud.set_item_count(iron_icon, str(iron))
+            Hud.set_item_count(gold_icon, str(gold))
+            
+            await asyncio.sleep(0.05)  # Wait 1 tick
+    
+    # Clean up
+    Hud.clear_texts()
+    Hud.clear_items()
+    print("Resource monitor stopped")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## Global HUD Controls
+
+<Steps>
+  <Step title="Toggle all HUD elements">
+    Show or hide all custom HUD elements at once:
+
+    ```python
+    from minescript_plus import Hud
+
+    # Hide all HUD elements
+    Hud.show_hud(False)
+
+    # Show them again
+    Hud.show_hud(True)
+    ```
+  </Step>
+
+  <Step title="Get all HUD elements">
+    Retrieve all current text and item elements:
+
+    ```python
+    from minescript_plus import Hud
+
+    # Get all text elements
+    texts = Hud.get_texts()
+    for idx, props in texts.items():
+        print(f"Text {idx}: {props}")
+
+    # Get all item elements
+    items = Hud.get_items()
+    for idx, props in items.items():
+        print(f"Item {idx}: {props}")
+    ```
+  </Step>
+</Steps>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Event Handling" icon="bolt" href="/examples/event-handling">
+    Combine HUD with events for reactive displays
+  </Card>
+  <Card title="HUD API Reference" icon="square" href="/minescript-plus/hud">
+    Full HUD API documentation
+  </Card>
+</CardGroup>

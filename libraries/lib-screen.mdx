@@ -1,0 +1,443 @@
+---
+title: Screen Library
+description: Simple Tkinter-based GUI library for creating screens and widgets
+---
+
+A helper library for creating simple graphical user interfaces using Tkinter with a streamlined API.
+
+## Overview
+
+The Screen library (`lib_screen.py`) provides:
+
+- **Screen**: Main window container
+- **Widget classes**: Labels, buttons, text inputs, checkboxes
+- **Flexible layouts**: Place, pack, and grid geometry managers
+- **Flow positioning**: Automatic widget positioning with `down` and `right` parameters
+
+## Key Features
+
+- Simple, declarative API for creating GUI elements
+- Automatic window centering
+- Flow-based layout system for rapid UI prototyping
+- Support for all Tkinter geometry managers
+- Built-in input dialogs
+
+## Classes
+
+### Screen
+
+The main window container for GUI applications.
+
+**Constructor**
+
+```python
+Screen(title="", width=320, height=240, x=None, y=None, **options)
+```
+
+**Parameters:**
+- `title` (str): Window title
+- `width` (int): Window width (default: 320)
+- `height` (int): Window height (default: 240)
+- `x` (int): Window x position (default: centered)
+- `y` (int): Window y position (default: centered)
+- `**options`: Additional Tkinter window options
+
+**Properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `width` | int | Window width |
+| `height` | int | Window height |
+| `x` | int | Window x position |
+| `y` | int | Window y position |
+| `title` | str | Window title |
+| `native` | tk.Tk | Native Tkinter window object |
+
+**Methods:**
+
+| Method | Description |
+|--------|-------------|
+| `show()` | Display the window and wait for it to close |
+| `close()` | Close the window |
+| `add_label(...)` | Create a label widget |
+| `add_button(...)` | Create a button widget |
+| `text_input(...)` | Create a text input widget |
+| `add_checkbox(...)` | Create a checkbox widget |
+| `input_dialog(...)` | Show an input dialog |
+
+### Widget Classes
+
+All widgets inherit from the `Base` class and share common properties:
+
+**Common Properties:**
+
+| Property | Type | Description |
+|----------|------|-------------|
+| `text` | str | Widget text/label |
+| `value` | Any | Widget value (inputs/checkboxes) |
+| `width` | int | Widget width |
+| `height` | int | Widget height |
+| `x` | int | Widget x position |
+| `y` | int | Widget y position |
+
+**Common Methods:**
+
+| Method | Description |
+|--------|-------------|
+| `style(**options)` | Apply styling options |
+| `remove()` | Remove the widget |
+| `place(method, **geometry)` | Change layout method |
+
+## Usage
+
+<Steps>
+
+### Create a Screen
+
+Initialize a screen window:
+
+```python
+from lib_screen import Screen
+
+screen = Screen(
+    title="My Application",
+    width=400,
+    height=300
+)
+```
+
+The window is automatically centered on the screen.
+
+### Add Widgets
+
+Add labels, buttons, and inputs:
+
+```python
+# Add a label
+label = screen.add_label(
+    text="Hello, World!",
+    x=10, y=10,
+    width=200, height=30
+)
+
+# Add a button
+def on_click():
+    print("Button clicked!")
+
+button = screen.add_button(
+    text="Click Me",
+    on_click=on_click,
+    x=10, y=50,
+    width=100, height=30
+)
+
+# Add a text input
+input_field = screen.text_input(
+    text="Initial value",
+    x=10, y=90,
+    width=200, height=30
+)
+
+# Add a checkbox
+checkbox = screen.add_checkbox(
+    text="Enable feature",
+    x=10, y=130,
+    width=200, height=30
+)
+```
+
+### Use Flow Positioning
+
+Automatically position widgets relative to others:
+
+```python
+# First widget at absolute position
+label1 = screen.add_label(
+    text="First Label",
+    x=10, y=10,
+    width=200, height=30
+)
+
+# Second widget below the first
+label2 = screen.add_label(
+    text="Second Label",
+    down=label1,  # Positioned below label1
+    width=200, height=30
+)
+
+# Third widget to the right of the second
+label3 = screen.add_label(
+    text="Third Label",
+    right=label2,  # Positioned to the right of label2
+    width=200, height=30
+)
+```
+
+### Access Widget Values
+
+Read and modify widget values:
+
+```python
+# Get text input value
+user_input = input_field.value
+print(f"User entered: {user_input}")
+
+# Set text input value
+input_field.value = "New value"
+
+# Get checkbox state
+is_checked = checkbox.value
+print(f"Checkbox is: {is_checked}")
+
+# Change label text
+label.text = "Updated text"
+```
+
+### Style Widgets
+
+Apply Tkinter styling options:
+
+```python
+label.style(
+    bg="#f0f0f0",
+    fg="#333333",
+    font=("Arial", 12, "bold")
+)
+
+button.style(
+    bg="#007bff",
+    fg="white",
+    font=("Arial", 10)
+)
+```
+
+### Show Input Dialog
+
+Display a simple input dialog:
+
+```python
+user_name = screen.input_dialog(
+    title="Enter Name",
+    prompt="What is your name?"
+)
+
+if user_name:
+    print(f"Hello, {user_name}!")
+```
+
+### Display the Screen
+
+Show the window and wait for user interaction:
+
+```python
+screen.show()  # Blocks until window is closed
+```
+
+</Steps>
+
+## Complete Example
+
+```python
+from lib_screen import Screen
+
+# Create screen
+screen = Screen(
+    title="User Registration",
+    width=400,
+    height=300
+)
+
+# Title label
+title = screen.add_label(
+    text="Register New User",
+    x=10, y=10,
+    width=380, height=30
+)
+title.style(font=("Arial", 14, "bold"))
+
+# Name input
+name_label = screen.add_label(
+    text="Name:",
+    down=title,
+    width=100, height=30
+)
+
+name_input = screen.text_input(
+    right=name_label,
+    width=250, height=30
+)
+
+# Email input
+email_label = screen.add_label(
+    text="Email:",
+    down=name_label,
+    width=100, height=30
+)
+
+email_input = screen.text_input(
+    right=email_label,
+    width=250, height=30
+)
+
+# Newsletter checkbox
+newsletter = screen.add_checkbox(
+    text="Subscribe to newsletter",
+    down=email_label,
+    width=300, height=30
+)
+
+# Submit button
+def submit():
+    name = name_input.value
+    email = email_input.value
+    subscribe = newsletter.value
+    
+    print(f"Name: {name}")
+    print(f"Email: {email}")
+    print(f"Subscribe: {subscribe}")
+    
+    screen.close()
+
+submit_btn = screen.add_button(
+    text="Submit",
+    on_click=submit,
+    down=newsletter,
+    width=100, height=30
+)
+submit_btn.style(bg="#28a745", fg="white")
+
+# Show the screen
+screen.show()
+```
+
+## Layout Methods
+
+The library supports all three Tkinter geometry managers:
+
+### Place (Default)
+
+Absolute positioning with x, y coordinates:
+
+```python
+Screen.DEFAULT_LAYOUT = "place"  # Default
+
+label = screen.add_label(
+    text="Label",
+    x=50, y=50,
+    width=100, height=30
+)
+```
+
+### Grid
+
+Grid-based layout:
+
+```python
+Screen.DEFAULT_LAYOUT = "grid"
+
+label = screen.add_label(text="Label")
+label.place("grid", row=0, column=0, padx=5, pady=5)
+```
+
+### Pack
+
+Automatic packing layout:
+
+```python
+Screen.DEFAULT_LAYOUT = "pack"
+
+label = screen.add_label(text="Label")
+label.place("pack", side="top", fill="x", padx=5, pady=5)
+```
+
+## Widget Reference
+
+### add_label()
+
+```python
+screen.add_label(
+    text="",
+    width=None,
+    height=20,
+    x=0, y=0,
+    down=None,
+    right=None,
+    **options
+)
+```
+
+### add_button()
+
+```python
+screen.add_button(
+    on_click=None,
+    text="",
+    width=None,
+    height=20,
+    x=0, y=0,
+    down=None,
+    right=None,
+    **options
+)
+```
+
+### text_input()
+
+```python
+screen.text_input(
+    on_change=None,
+    text="",
+    width=None,
+    height=20,
+    x=0, y=0,
+    down=None,
+    right=None,
+    **options
+)
+```
+
+### add_checkbox()
+
+```python
+screen.add_checkbox(
+    on_click=None,
+    text="",
+    width=None,
+    height=20,
+    x=0, y=0,
+    down=None,
+    right=None,
+    **options
+)
+```
+
+### input_dialog()
+
+```python
+screen.input_dialog(
+    title="",
+    prompt=""
+) -> str | None
+```
+
+## Common Styling Options
+
+Tkinter options that can be passed to `style()` or as `**options`:
+
+| Option | Description | Example |
+|--------|-------------|----------|
+| `bg` | Background color | `bg="#ffffff"` |
+| `fg` | Foreground/text color | `fg="#000000"` |
+| `font` | Font settings | `font=("Arial", 12)` |
+| `relief` | Border style | `relief="solid"` |
+| `borderwidth` | Border width | `borderwidth=2` |
+| `padx` | Horizontal padding | `padx=10` |
+| `pady` | Vertical padding | `pady=5` |
+| `anchor` | Text alignment | `anchor="center"` |
+
+## Source Reference
+
+- **File**: `lib_screen.py` (lines 1-232)
+- **Screen class**: lib_screen.py:150
+- **Base class**: lib_screen.py:28
+- **Widget classes**: lib_screen.py:113-144

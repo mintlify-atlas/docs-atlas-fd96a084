@@ -1,0 +1,128 @@
+---
+title: Key
+description: Keyboard input simulation and key press handling
+icon: keyboard
+---
+
+The `Key` class provides methods for simulating keyboard input in Minecraft.
+
+## press_key
+
+Simulates pressing or releasing a key based on the provided key name and state.
+
+<ParamField path="key_name" type="str" required>
+  The name of the key to press or release (GLFW key code format).
+</ParamField>
+
+<ParamField path="state" type="bool" required>
+  True to press the key, False to release it.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:774`
+
+```python
+import minescript_plus as ms
+import time
+
+# Press the 'W' key (move forward)
+ms.Key.press_key("key.keyboard.w", True)
+time.sleep(1)
+
+# Release the 'W' key
+ms.Key.press_key("key.keyboard.w", False)
+```
+
+<Note>
+  For a list of key codes used by Minecraft, see: [Minecraft Wiki - Key Codes](https://minecraft.wiki/w/Key_codes#Current)
+</Note>
+
+## Usage Examples
+
+### Basic Key Press
+
+```python
+import minescript_plus as ms
+import time
+
+# Sprint forward for 2 seconds
+ms.Key.press_key("key.keyboard.w", True)
+ms.Key.press_key("key.keyboard.left.control", True)
+time.sleep(2)
+ms.Key.press_key("key.keyboard.w", False)
+ms.Key.press_key("key.keyboard.left.control", False)
+```
+
+### Multiple Keys
+
+```python
+import minescript_plus as ms
+import time
+
+# Strafe right while moving forward
+ms.Key.press_key("key.keyboard.w", True)
+ms.Key.press_key("key.keyboard.d", True)
+time.sleep(1.5)
+ms.Key.press_key("key.keyboard.w", False)
+ms.Key.press_key("key.keyboard.d", False)
+```
+
+### Jump
+
+```python
+import minescript_plus as ms
+import time
+
+# Single jump
+ms.Key.press_key("key.keyboard.space", True)
+time.sleep(0.1)
+ms.Key.press_key("key.keyboard.space", False)
+```
+
+### Type Text (Advanced)
+
+```python
+import minescript_plus as ms
+import time
+
+def type_text(text: str, delay: float = 0.05):
+    """Types text by pressing individual keys."""
+    for char in text:
+        key_code = f"key.keyboard.{char.lower()}"
+        ms.Key.press_key(key_code, True)
+        time.sleep(delay)
+        ms.Key.press_key(key_code, False)
+        time.sleep(delay)
+
+# Open chat and type a message
+ms.Key.press_key("key.keyboard.t", True)
+ms.Key.press_key("key.keyboard.t", False)
+time.sleep(0.2)
+type_text("hello")
+```
+
+## Common Key Codes
+
+| Action | Key Code |
+|--------|----------|
+| Forward | `key.keyboard.w` |
+| Backward | `key.keyboard.s` |
+| Strafe Left | `key.keyboard.a` |
+| Strafe Right | `key.keyboard.d` |
+| Jump | `key.keyboard.space` |
+| Sneak | `key.keyboard.left.shift` |
+| Sprint | `key.keyboard.left.control` |
+| Inventory | `key.keyboard.e` |
+| Drop Item | `key.keyboard.q` |
+| Chat | `key.keyboard.t` |
+| Command | `key.keyboard.slash` |
+| F3 | `key.keyboard.f3` |
+
+<Tip>
+  Always remember to release keys (set state to False) after pressing them to avoid stuck keys.
+</Tip>
+
+<Warning>
+  Using this method while the player is manually controlling the game can cause unexpected behavior. Use with caution.
+</Warning>

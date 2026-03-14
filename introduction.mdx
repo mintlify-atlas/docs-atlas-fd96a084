@@ -1,0 +1,80 @@
+---
+title: Introduction
+description: Learn about Minescript Plus - a user-friendly API extension for the Minescript mod
+---
+
+## What is Minescript Plus?
+
+Minescript Plus is a feature-rich API extension for the [Minescript](https://github.com/maxuser0/minescript) mod that adds extra functionality and provides a user-friendly interface for creating powerful Minecraft scripts in Python.
+
+**Version:** 0.16.2-alpha  
+**Author:** RazrCraft
+
+<Note>
+Minescript Plus is actively developed and should be imported by other scripts, not run directly.
+</Note>
+
+## Key Features
+
+Minescript Plus extends the base Minescript functionality with comprehensive classes for:
+
+<CardGroup cols={2}>
+  <Card title="Inventory Management" icon="box">
+    Click slots, swap items, find items by ID or name, and interact with containers
+  </Card>
+  
+  <Card title="GUI Control" icon="window-maximize">
+    Manipulate titles, subtitles, actionbars, and custom HUD elements
+  </Card>
+  
+  <Card title="Player & World Info" icon="user">
+    Access game mode, position, XP, food level, weather, time, and more
+  </Card>
+  
+  <Card title="Event System" icon="bolt">
+    Register listeners for title, subtitle, actionbar, and screen changes
+  </Card>
+  
+  <Card title="Trading" icon="handshake">
+    Automate villager trading with full control over merchant offers
+  </Card>
+  
+  <Card title="Custom Keybinds" icon="keyboard">
+    Register custom key handlers that trigger Python callbacks
+  </Card>
+</CardGroup>
+
+## Direct Minecraft Class Access
+
+Some classes in Minescript Plus—specifically **Client**, **Player**, and **World**—expose the original Minecraft class instance when initialized. This means you can access their public fields and methods directly:
+
+```python
+from minescript_plus import Player
+
+p = Player()
+print(p.getArmorValue())  # Access any public method from Minecraft's Player class
+```
+
+## Use Cases
+
+Minescript Plus is perfect for:
+
+- **Automation Scripts** - Automate repetitive tasks like inventory management, trading, or resource gathering
+- **Custom Tools** - Build utilities that enhance your Minecraft experience
+- **Game Monitoring** - Track player stats, world conditions, or server information
+- **Interactive Scripts** - Create scripts that respond to in-game events in real-time
+- **HUD Overlays** - Display custom information on your screen during gameplay
+
+## Getting Started
+
+Ready to start using Minescript Plus? Check out the [Installation](/installation) guide to set up your environment, then follow the [Quick Start](/quickstart) tutorial to create your first script.
+
+<Note>
+As this is an alpha version, expect possible breaking changes in future updates.
+</Note>
+
+## License
+
+Minescript Plus is licensed under the MIT License © 2025 RazrCraft.
+
+If you use this code (or any part of it), you must give proper credit by mentioning *RazrCraft* and linking back to the repository: [https://github.com/R4z0rX/minescript-scripts](https://github.com/R4z0rX/minescript-scripts)

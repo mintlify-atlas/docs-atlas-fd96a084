@@ -1,0 +1,201 @@
+---
+title: Client
+description: Access Minecraft client instance and client-level operations
+icon: desktop
+---
+
+The `Client` class provides access to the Minecraft client instance and various client-level operations.
+
+<Note>
+  The Client class can be instantiated to get direct access to the Minecraft client instance: `client = Client()`
+</Note>
+
+## pause_game
+
+Pauses the game.
+
+<ParamField path="pause_only" type="bool" default="False">
+  If True, only pauses without opening the pause menu.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:798`
+
+```python
+import minescript_plus as ms
+
+# Pause the game and open pause menu
+ms.Client.pause_game()
+
+# Pause without opening menu (singleplayer only)
+ms.Client.pause_game(pause_only=True)
+```
+
+## is_local_server
+
+Checks if the server is running locally (singleplayer).
+
+**Returns:** `bool` - True if it's a local server, False otherwise.
+
+**Source:** `minescript_plus.py:802`
+
+```python
+import minescript_plus as ms
+
+if ms.Client.is_local_server():
+    print("Playing in singleplayer")
+else:
+    print("Playing on a server")
+```
+
+## is_multiplayer_server
+
+Determines whether the current Minecraft instance is connected to a multiplayer server.
+
+**Returns:** `bool` - True if connected to a multiplayer server, False otherwise.
+
+**Source:** `minescript_plus.py:812`
+
+```python
+import minescript_plus as ms
+
+if ms.Client.is_multiplayer_server():
+    print("Connected to multiplayer server")
+else:
+    print("Not on a multiplayer server")
+```
+
+## disconnect
+
+Disconnects the current Minecraft network connection.
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:824`
+
+<Warning>
+  This will immediately disconnect you from the server or close your singleplayer world.
+</Warning>
+
+```python
+import minescript_plus as ms
+
+# Disconnect from server
+ms.Client.disconnect()
+```
+
+## get_options
+
+Returns an instance of the game options.
+
+**Returns:** Game options object
+
+**Source:** `minescript_plus.py:835`
+
+```python
+import minescript_plus as ms
+
+# Get option values
+options = ms.Client.get_options()
+fov = options.fov().value
+gamma = options.gamma().get()
+
+print(f"FOV: {fov}")
+print(f"Gamma: {gamma}")
+
+# Set option values
+options.fov().set(90)
+options.gamma().set(1.0)
+```
+
+<Tip>
+  Use `.value` or `.get()` to retrieve option values, and `.set(value)` to change them.
+</Tip>
+
+## send_packet
+
+Sends a custom packet to the server.
+
+<ParamField path="packet_class" type="str" required>
+  The packet class name (Intermediary, Mojang, or Yarn naming).
+</ParamField>
+
+<ParamField path="*args" type="any">
+  Arguments to pass to the packet constructor.
+</ParamField>
+
+<ParamField path="cat" type="str" default="">
+  Category for the packet (e.g., "play", "game").
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:848`
+
+```python
+import minescript_plus as ms
+
+# Close a container (Mojang naming)
+ms.Client.send_packet("ServerboundContainerClosePacket", container_id)
+
+# Using Intermediary naming
+ms.Client.send_packet("class_1234", arg1, arg2)
+
+# Using Yarn naming (Fabric)
+ms.Client.send_packet("CloseHandledScreenC2SPacket", container_id, cat="play")
+```
+
+<Note>
+  Packet class references:
+  - Mojang: [mappings.dev](https://mappings.dev/1.21.8/net/minecraft/network/protocol/game/index.html)
+  - Yarn: [FabricMC Maven](https://maven.fabricmc.net/docs/yarn-1.21.8+build.1/net/minecraft/network/packet/c2s/play/package-summary.html)
+</Note>
+
+## Access Client Instance
+
+```python
+import minescript_plus as ms
+
+# Get direct access to Minecraft client
+client = ms.Client()
+
+# Access client properties
+player = client.player
+level = client.level
+screen = client.screen
+
+# Example: Check if a screen is open
+if client.screen is not None:
+    print(f"Screen open: {client.screen}")
+else:
+    print("No screen open")
+```
+
+## Complete Example
+
+```python
+import minescript_plus as ms
+import time
+
+# Check connection type
+if ms.Client.is_local_server():
+    print("Playing singleplayer")
+    
+    # Adjust settings
+    options = ms.Client.get_options()
+    current_fov = options.fov().value
+    print(f"Current FOV: {current_fov}")
+    
+    # Temporarily increase FOV
+    options.fov().set(110)
+    time.sleep(5)
+    
+    # Restore FOV
+    options.fov().set(current_fov)
+    
+elif ms.Client.is_multiplayer_server():
+    print("Playing multiplayer")
+    # Could disconnect after some condition
+    # ms.Client.disconnect()
+```

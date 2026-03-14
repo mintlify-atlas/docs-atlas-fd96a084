@@ -1,0 +1,353 @@
+---
+title: Events
+description: Event system for responding to game events
+icon: bolt
+---
+
+The `Event` class provides an asynchronous event system for responding to various in-game events like title displays, screen changes, and more.
+
+<Note>
+  The Event system uses async/await and must be used with `asyncio` in Minescript's script_loop or render_loop.
+</Note>
+
+## Built-in Events
+
+Minescript Plus provides the following built-in events:
+
+- **on_title** - Triggered when a title is displayed
+- **on_subtitle** - Triggered when a subtitle is displayed
+- **on_actionbar** - Triggered when actionbar text is shown
+- **on_open_screen** - Triggered when a screen/GUI opens
+
+## register
+
+Registers a callback function to be called when an event occurs.
+
+<ParamField path="event_name" type="str" required>
+  The name of the event to listen for (e.g., "on_title", "on_subtitle").
+</ParamField>
+
+<ParamField path="callback" type="Callable" required>
+  The function to call when the event triggers. The callback receives event-specific arguments.
+</ParamField>
+
+<ParamField path="once" type="bool" default="False">
+  If True, the listener will automatically unregister after being triggered once.
+</ParamField>
+
+<ParamField path="check_interval" type="float" default="0.05">
+  How often to check for the event in seconds. Some events override this with their own interval.
+</ParamField>
+
+**Returns:** `Listener` - A listener object that can be used to unregister the event.
+
+**Source:** `minescript_plus.py:166`
+
+```python
+import minescript_plus as ms
+import asyncio
+from minescript import script_loop
+
+async def main():
+    # Register an event listener
+    async def on_title_shown(title_text):
+        print(f"Title shown: {title_text}")
+    
+    listener = await ms.Event.register("on_title", on_title_shown)
+    
+    # Keep script running
+    while True:
+        await asyncio.sleep(1)
+
+with script_loop:
+    asyncio.run(main())
+```
+
+## unregister
+
+Unregisters an event listener.
+
+<ParamField path="listener" type="Listener" required>
+  The listener object returned from register().
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:189`
+
+```python
+import minescript_plus as ms
+import asyncio
+from minescript import script_loop
+
+async def main():
+    def on_subtitle_shown(subtitle_text):
+        print(f"Subtitle: {subtitle_text}")
+    
+    # Register listener
+    listener = await ms.Event.register("on_subtitle", on_subtitle_shown)
+    
+    # Wait 10 seconds
+    await asyncio.sleep(10)
+    
+    # Unregister
+    ms.Event.unregister(listener)
+    print("Listener unregistered")
+
+with script_loop:
+    asyncio.run(main())
+```
+
+## Custom Events
+
+You can define your own custom events using the `@Event.event` decorator or the `define_event` methods.
+
+### define_flag_event
+
+Defines a simple flag-based event that can be manually triggered.
+
+<ParamField path="name" type="str" required>
+  The name of the custom event.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:202`
+
+```python
+import minescript_plus as ms
+
+# Define a custom flag event
+ms.Event.define_flag_event("on_custom_trigger")
+
+# Later, trigger it manually
+ms.Event.set_trigger("on_custom_trigger", True)
+```
+
+### define_callback_event
+
+Defines an event with a custom condition function.
+
+<ParamField path="name" type="str" required>
+  The name of the custom event.
+</ParamField>
+
+<ParamField path="condition" type="Callable" required>
+  A function that returns (triggered: bool, args: tuple, kwargs: dict).
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:206`
+
+```python
+import minescript_plus as ms
+import minescript as msc
+
+# Define event that triggers when player is low on health
+def check_low_health():
+    player = ms.Player()
+    health = player.getHealth()
+    if health < 6:
+        return True, (health,), {}
+    return False, (), {}
+
+ms.Event.define_callback_event("on_low_health", check_low_health)
+```
+
+### set_trigger
+
+Manually triggers a flag-based event.
+
+<ParamField path="event_name" type="str" required>
+  The name of the flag event.
+</ParamField>
+
+<ParamField path="value" type="bool" required>
+  True to trigger, False to reset.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:222`
+
+```python
+import minescript_plus as ms
+
+# Trigger a custom event
+ms.Event.set_trigger("on_custom_trigger", True)
+
+# Reset the trigger
+ms.Event.set_trigger("on_custom_trigger", False)
+```
+
+## Event Decorator
+
+### @Event.event
+
+Decorator to register a function as an event handler.
+
+**Source:** `minescript_plus.py:211`
+
+```python
+import minescript_plus as ms
+import asyncio
+from minescript import script_loop
+
+# Define event handlers using decorator
+@ms.Event.event
+def on_title(title_text):
+    print(f"Title appeared: {title_text}")
+
+@ms.Event.event
+def on_subtitle(subtitle_text):
+    print(f"Subtitle appeared: {subtitle_text}")
+
+async def main():
+    # Activate all decorated event handlers
+    await ms.Event.activate_all()
+    
+    # Keep running
+    while True:
+        await asyncio.sleep(1)
+
+with script_loop:
+    asyncio.run(main())
+```
+
+## Complete Examples
+
+### Title/Subtitle Logger
+
+```python
+import minescript_plus as ms
+import asyncio
+from minescript import script_loop
+
+async def main():
+    print("Listening for titles and subtitles...")
+    
+    async def on_title_shown(title):
+        print(f"[TITLE] {title}")
+    
+    async def on_subtitle_shown(subtitle):
+        print(f"[SUBTITLE] {subtitle}")
+    
+    async def on_actionbar_shown(text):
+        print(f"[ACTIONBAR] {text}")
+    
+    # Register all listeners
+    await ms.Event.register("on_title", on_title_shown)
+    await ms.Event.register("on_subtitle", on_subtitle_shown)
+    await ms.Event.register("on_actionbar", on_actionbar_shown)
+    
+    # Keep running
+    while True:
+        await asyncio.sleep(1)
+
+with script_loop:
+    asyncio.run(main())
+```
+
+### Screen Change Monitor
+
+```python
+import minescript_plus as ms
+import asyncio
+from minescript import script_loop
+
+async def main():
+    print("Monitoring screen changes...")
+    
+    last_screen = None
+    
+    async def on_screen_change(screen_name):
+        nonlocal last_screen
+        if screen_name != last_screen:
+            print(f"Screen changed: {screen_name}")
+            last_screen = screen_name
+    
+    await ms.Event.register("on_open_screen", on_screen_change)
+    
+    while True:
+        await asyncio.sleep(1)
+
+with script_loop:
+    asyncio.run(main())
+```
+
+### One-Time Event
+
+```python
+import minescript_plus as ms
+import asyncio
+from minescript import script_loop, render_loop
+
+async def main():
+    print("Waiting for first title...")
+    
+    async def on_first_title(title):
+        print(f"First title detected: {title}")
+        print("Listener will not trigger again.")
+    
+    # Use once=True to auto-unregister after first trigger
+    await ms.Event.register("on_title", on_first_title, once=True)
+    
+    # Test by showing a title
+    await asyncio.sleep(2)
+    with render_loop:
+        ms.Gui.set_title("Test Title")
+    
+    # Keep running to verify it doesn't trigger again
+    await asyncio.sleep(5)
+    with render_loop:
+        ms.Gui.set_title("Second Title")
+    
+    await asyncio.sleep(2)
+
+with script_loop:
+    asyncio.run(main())
+```
+
+### Custom Health Monitor Event
+
+```python
+import minescript_plus as ms
+import asyncio
+from minescript import script_loop
+
+# Define custom low health event
+def check_low_health():
+    player = ms.Player()
+    health = player.getHealth()
+    if health < 6:
+        return True, (health,), {}
+    return False, (), {}
+
+ms.Event.define_callback_event("on_low_health", check_low_health)
+
+async def main():
+    print("Health monitor active...")
+    
+    async def health_warning(health):
+        print(f"⚠️ WARNING: Low health! ({health}/20)")
+        # Play warning sound
+        SoundEvents = ms.Util.get_soundevents()
+        ms.Util.play_sound(
+            sound=SoundEvents.BLOCK_NOTE_BLOCK_BASS,
+            volume=1.0,
+            pitch=0.5
+        )
+    
+    await ms.Event.register(
+        "on_low_health",
+        health_warning,
+        check_interval=1.0  # Check every second
+    )
+    
+    while True:
+        await asyncio.sleep(1)
+
+with script_loop:
+    asyncio.run(main())
+```

@@ -1,0 +1,463 @@
+---
+title: Hud
+description: Custom HUD text and item rendering on screen
+icon: display
+---
+
+The `Hud` class provides methods for displaying custom text and items on the Minecraft HUD.
+
+<Warning>
+  The Hud class is **only available on Fabric**. It will not work on Forge or NeoForge.
+</Warning>
+
+## Text Methods
+
+### add_text
+
+Adds a text string to the Minecraft HUD at the specified position.
+
+<ParamField path="text" type="str" required>
+  The text to display.
+</ParamField>
+
+<ParamField path="x" type="int" required>
+  X position on screen.
+</ParamField>
+
+<ParamField path="y" type="int" required>
+  Y position on screen.
+</ParamField>
+
+<ParamField path="color" type="tuple" default="(255,255,255)">
+  RGB color tuple.
+</ParamField>
+
+<ParamField path="alpha" type="int" default="255">
+  Alpha transparency (0-255).
+</ParamField>
+
+<ParamField path="scale" type="float" default="1.0">
+  Text scale multiplier.
+</ParamField>
+
+<ParamField path="shadow" type="bool" default="False">
+  Enable text shadow.
+</ParamField>
+
+<ParamField path="italic" type="bool" default="False">
+  Make text italic.
+</ParamField>
+
+<ParamField path="underline" type="bool" default="False">
+  Underline the text.
+</ParamField>
+
+<ParamField path="strikethrough" type="bool" default="False">
+  Add strikethrough effect.
+</ParamField>
+
+<ParamField path="obfsucated" type="bool" default="False">
+  Make text obfuscated (scrambled).
+</ParamField>
+
+<ParamField path="anchorX" type="float" default="0">
+  Anchor X as percentage of screen width (0-1).
+</ParamField>
+
+<ParamField path="anchorY" type="float" default="0">
+  Anchor Y as percentage of screen height (0-1).
+</ParamField>
+
+<ParamField path="justifyX" type="float" default="-1">
+  Text horizontal justification (-1=left, 0=center, 1=right).
+</ParamField>
+
+<ParamField path="justifyY" type="float" default="-1">
+  Text vertical justification (-1=top, 0=center, 1=bottom).
+</ParamField>
+
+<ParamField path="screens" type="str | list[str]" default="'all'">
+  Screen names where text should render. Use "all" for all screens.
+</ParamField>
+
+**Returns:** `int` - Index of the added text.
+
+**Source:** `minescript_plus.py:1933`
+
+```python
+import minescript_plus as ms
+
+# Simple text
+index = ms.Hud.add_text("Hello World", x=10, y=10)
+
+# Styled text
+index2 = ms.Hud.add_text(
+    "Player Stats",
+    x=10, y=30,
+    color=(255, 215, 0),  # Gold
+    scale=1.5,
+    shadow=True
+)
+
+# Centered text at top
+index3 = ms.Hud.add_text(
+    "Quest Active",
+    x=0, y=10,
+    anchorX=0.5,  # Center horizontally
+    justifyX=0    # Center justify
+)
+```
+
+### update_text
+
+Updates an existing text entry with new properties.
+
+<ParamField path="index" type="int" required>
+  Index of the text to update (returned from add_text).
+</ParamField>
+
+*(Other parameters same as add_text)*
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:1958`
+
+```python
+import minescript_plus as ms
+
+index = ms.Hud.add_text("Score: 0", x=10, y=10)
+
+# Update the text
+ms.Hud.update_text(index, "Score: 100", x=10, y=10, color=(0, 255, 0))
+```
+
+### get_text_string
+
+Returns the text content of an existing entry by its index.
+
+<ParamField path="index" type="int" required>
+  Index of the text.
+</ParamField>
+
+**Returns:** `str` - Current text content.
+
+**Source:** `minescript_plus.py:1984`
+
+### set_text_string
+
+Changes the text content of an existing entry.
+
+<ParamField path="index" type="int" required>
+  Index of the text to change.
+</ParamField>
+
+<ParamField path="text" type="str" required>
+  New text content.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:1996`
+
+```python
+import minescript_plus as ms
+
+index = ms.Hud.add_text("Lives: 3", x=10, y=10)
+
+# Later, update just the text
+ms.Hud.set_text_string(index, "Lives: 2")
+```
+
+### get_text_position
+
+Returns the position of an existing text entry.
+
+<ParamField path="index" type="int" required>
+  Index of the text.
+</ParamField>
+
+**Returns:** `tuple[int, int]` - Position (x, y).
+
+**Source:** `minescript_plus.py:2007`
+
+### set_text_position
+
+Changes the position of an existing text entry.
+
+<ParamField path="index" type="int" required>
+  Index of the text.
+</ParamField>
+
+<ParamField path="x" type="int" required>
+  New X position.
+</ParamField>
+
+<ParamField path="y" type="int" required>
+  New Y position.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2019`
+
+### show_text
+
+Shows or hides a specific HUD text entry.
+
+<ParamField path="index" type="int" required>
+  Index of the text.
+</ParamField>
+
+<ParamField path="enable" type="bool" required>
+  True to show, False to hide.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2069`
+
+### remove_text
+
+Removes a text entry from the HUD.
+
+<ParamField path="index" type="int" required>
+  Index of the text to remove.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2031`
+
+### clear_texts
+
+Removes all text entries from the HUD.
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2041`
+
+## Item Methods
+
+### add_item
+
+Adds an item icon to the HUD at the specified position.
+
+<ParamField path="item_id" type="str" required>
+  The item ID to display (e.g., "minecraft:diamond").
+</ParamField>
+
+<ParamField path="x" type="int" required>
+  X position on screen.
+</ParamField>
+
+<ParamField path="y" type="int" required>
+  Y position on screen.
+</ParamField>
+
+<ParamField path="count" type="str" default="''">
+  Text to show as item count.
+</ParamField>
+
+<ParamField path="scale" type="float" default="1.0">
+  Icon scale multiplier.
+</ParamField>
+
+<ParamField path="anchorX" type="float" default="0">
+  Anchor X as percentage of screen width (0-1).
+</ParamField>
+
+<ParamField path="anchorY" type="float" default="0">
+  Anchor Y as percentage of screen height (0-1).
+</ParamField>
+
+<ParamField path="justifyX" type="float" default="-1">
+  Horizontal justification (-1=left, 0=center, 1=right).
+</ParamField>
+
+<ParamField path="justifyY" type="float" default="-1">
+  Vertical justification (-1=top, 0=center, 1=bottom).
+</ParamField>
+
+<ParamField path="screens" type="str | list[str]" default="'all'">
+  Screen names where item should render.
+</ParamField>
+
+**Returns:** `int` - Index of the added item.
+
+**Source:** `minescript_plus.py:2136`
+
+```python
+import minescript_plus as ms
+
+# Display a diamond
+index = ms.Hud.add_item("minecraft:diamond", x=10, y=50)
+
+# Display with count
+index2 = ms.Hud.add_item(
+    "minecraft:emerald",
+    x=10, y=70,
+    count="64",
+    scale=1.5
+)
+```
+
+### update_item
+
+Updates an existing item entry.
+
+<ParamField path="index" type="int" required>
+  Index of the item to update.
+</ParamField>
+
+*(Other parameters same as add_item)*
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2157`
+
+### show_item
+
+Shows or hides a specific HUD item entry.
+
+<ParamField path="index" type="int" required>
+  Index of the item.
+</ParamField>
+
+<ParamField path="enable" type="bool" required>
+  True to show, False to hide.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2275`
+
+### remove_item
+
+Removes an item entry from the HUD.
+
+<ParamField path="index" type="int" required>
+  Index of the item to remove.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2247`
+
+### clear_items
+
+Removes all item entries from the HUD.
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2257`
+
+## HUD Control
+
+### show_hud
+
+Enables or disables display of all HUD content.
+
+<ParamField path="enable" type="bool" required>
+  True to show, False to hide.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2059`
+
+```python
+import minescript_plus as ms
+
+# Hide all HUD elements
+ms.Hud.show_hud(False)
+
+# Show all HUD elements again
+ms.Hud.show_hud(True)
+```
+
+### use_toggle_key
+
+Enables or disables the HUD toggle key (default F12).
+
+<ParamField path="enable" type="bool" required>
+  True to allow toggling HUD with key.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2080`
+
+```python
+import minescript_plus as ms
+
+# Enable F12 to toggle HUD
+ms.Hud.use_toggle_key(True)
+```
+
+### set_toggle_key
+
+Sets the key code used to toggle HUD display.
+
+<ParamField path="toggle_key" type="int" required>
+  GLFW key code for toggling.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:2090`
+
+```python
+import minescript_plus as ms
+
+# Set toggle key to F11 (GLFW code 300)
+ms.Hud.set_toggle_key(300)
+ms.Hud.use_toggle_key(True)
+```
+
+## Complete Example: Player Stats HUD
+
+```python
+import minescript_plus as ms
+import minescript as msc
+import time
+
+# Create HUD elements
+title = ms.Hud.add_text(
+    "Player Stats",
+    x=10, y=10,
+    color=(255, 215, 0),
+    scale=1.2,
+    shadow=True
+)
+
+health_text = ms.Hud.add_text("", x=10, y=30, shadow=True)
+food_text = ms.Hud.add_text("", x=10, y=45, shadow=True)
+pos_text = ms.Hud.add_text("", x=10, y=60, shadow=True)
+
+# Add item icons
+health_icon = ms.Hud.add_item("minecraft:golden_apple", x=150, y=30, scale=0.8)
+food_icon = ms.Hud.add_item("minecraft:cooked_beef", x=150, y=45, scale=0.8)
+
+# Enable F12 toggle
+ms.Hud.use_toggle_key(True)
+
+# Update loop
+try:
+    while True:
+        # Get player stats
+        player = ms.Player()
+        health = player.getHealth()
+        food = ms.Player.get_food_level()
+        pos = ms.Player.get_player_block_position()
+        
+        # Update text
+        ms.Hud.set_text_string(health_text, f"Health: {health:.1f}/20")
+        ms.Hud.set_text_string(food_text, f"Food: {food}/20")
+        ms.Hud.set_text_string(pos_text, f"Pos: {pos[0]}, {pos[1]}, {pos[2]}")
+        
+        time.sleep(0.5)
+except KeyboardInterrupt:
+    # Cleanup
+    ms.Hud.clear_texts()
+    ms.Hud.clear_items()
+```

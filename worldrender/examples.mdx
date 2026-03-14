@@ -1,0 +1,381 @@
+---
+title: WorldRender Examples
+description: Real-world examples of using WorldRender in Minecraft
+---
+
+## Basic Usage
+
+These examples demonstrate the fundamental usage patterns from the test files.
+
+### Adding All Shape Types
+
+```python
+from worldrender import WorldRender
+
+Y = 64  # Base height
+
+# Add various shapes
+box_id    = WorldRender.add_box(1, Y+1, 1, 4, Y+3, 4, r=255, g=64, b=64)
+block_id  = WorldRender.add_block(0, Y, 0, r=255, g=64, b=64)
+text_id   = WorldRender.add_text(0.5, Y + 2, 0.5, "Hello WorldRender!", r=255, g=255, b=64)
+point_id  = WorldRender.add_point(1.0, Y + 1, 0.0, r=64, g=255, b=64, size=6.0)
+line_id   = WorldRender.add_line(0.0, Y + 1, -2.0, 2.0, Y + 1, -2.0, r=64, g=128, b=255, width=2.0)
+arrow_id  = WorldRender.add_arrow(0.0, Y + 1, 2.0, 3.0, Y + 1, 2.0, r=255, g=128, b=64, width=2.0)
+circle_id = WorldRender.add_circle(0.0, Y + 1, -4.0, radius=2.5, r=200, g=64, b=255)
+rect_id   = WorldRender.add_rect(
+    -1.0, Y + 1,  4.0,
+     1.0, Y + 1,  4.0,
+     1.0, Y + 1,  6.0,
+    -1.0, Y + 1,  6.0,
+    r=64, g=255, b=200, filled=True
+)
+```
+
+### Removing Shapes
+
+<CodeGroup>
+
+```python Remove by ID
+from worldrender import WorldRender
+
+# Add shapes and store IDs
+box_id = WorldRender.add_box(1, 65, 1, 4, 67, 4, r=255, g=64, b=64)
+block_id = WorldRender.add_block(0, 64, 0, r=255, g=64, b=64)
+text_id = WorldRender.add_text(0.5, 66, 0.5, "Hello!", r=255, g=255, b=64)
+
+# Remove using IDs
+WorldRender.remove_box(id=box_id)
+WorldRender.remove_block(id=block_id)
+WorldRender.remove_text(id=text_id)
+```
+
+```python Remove by Coordinates
+from worldrender import WorldRender
+
+Y = 64
+
+# Add shapes
+WorldRender.add_box(1, Y+1, 1, 4, Y+3, 4)
+WorldRender.add_block(0, Y, 0)
+WorldRender.add_text(0.5, Y + 2, 0.5, "Hello!")
+
+# Remove using coordinates
+WorldRender.remove_box(1, Y+1, 1, 4, Y+3, 4)
+WorldRender.remove_block(0, Y, 0)
+WorldRender.remove_text(0.5, Y + 2, 0.5)
+```
+
+</CodeGroup>
+
+### Inspecting Active Shapes
+
+```python
+from worldrender import WorldRender
+from time import sleep
+
+# Add some shapes
+WorldRender.add_box(1, 65, 1, 4, 67, 4, r=255, g=64, b=64)
+WorldRender.add_block(0, 64, 0, r=255, g=64, b=64)
+WorldRender.add_text(0.5, 66, 0.5, "Test", r=255, g=255, b=64)
+
+sleep(1)
+
+# Get lists of active shapes
+print("=== box list ===")
+print(WorldRender.get_box_list())
+
+print("=== block list ===")
+print(WorldRender.get_block_list())
+
+print("=== text list ===")
+print(WorldRender.get_text_list())
+```
+
+## Practical Examples
+
+### Marking a Path
+
+```python
+from worldrender import WorldRender
+
+# Define waypoints
+waypoints = [
+    (0, 64, 0),
+    (10, 64, 5),
+    (20, 64, 10),
+    (30, 64, 8),
+    (40, 64, 0),
+]
+
+# Mark each waypoint with a point and text
+for i, (x, y, z) in enumerate(waypoints):
+    WorldRender.add_point(x, y, z, r=0, g=255, b=0, size=6.0)
+    WorldRender.add_text(x, y + 1, z, f"Waypoint {i+1}", r=255, g=255, b=0)
+
+# Draw lines between waypoints
+for i in range(len(waypoints) - 1):
+    x1, y1, z1 = waypoints[i]
+    x2, y2, z2 = waypoints[i + 1]
+    WorldRender.add_line(x1, y1, z1, x2, y2, z2, r=0, g=255, b=255, width=2.0)
+```
+
+### Highlighting a Region
+
+```python
+from worldrender import WorldRender
+
+# Define region boundaries
+min_x, min_y, min_z = 0, 64, 0
+max_x, max_y, max_z = 20, 80, 20
+
+# Draw semi-transparent box around region
+WorldRender.add_box(
+    min_x, min_y, min_z,
+    max_x, max_y, max_z,
+    r=255, g=200, b=0,
+    a=128,  # Semi-transparent
+    always_on_top=False
+)
+
+# Label the region
+WorldRender.add_text(
+    (min_x + max_x) / 2,
+    max_y + 2,
+    (min_z + max_z) / 2,
+    "Protected Area",
+    r=255, g=255, b=0,
+    size=2.0
+)
+```
+
+### Building Grid Visualization
+
+```python
+from worldrender import WorldRender
+
+# Create a grid of blocks
+grid_size = 10
+spacing = 5
+y_level = 64
+
+for x in range(grid_size):
+    for z in range(grid_size):
+        world_x = x * spacing
+        world_z = z * spacing
+        
+        # Checkerboard pattern
+        if (x + z) % 2 == 0:
+            color = (255, 255, 255)  # White
+        else:
+            color = (64, 64, 64)     # Dark gray
+        
+        WorldRender.add_block(
+            world_x, y_level, world_z,
+            r=color[0], g=color[1], b=color[2],
+            a=128
+        )
+```
+
+### Direction Indicators
+
+```python
+from worldrender import WorldRender
+
+# Origin point
+origin_x, origin_y, origin_z = 0, 64, 0
+arrow_length = 5
+
+# X-axis (red arrow)
+WorldRender.add_arrow(
+    origin_x, origin_y, origin_z,
+    origin_x + arrow_length, origin_y, origin_z,
+    r=255, g=0, b=0,
+    width=3.0
+)
+WorldRender.add_text(
+    origin_x + arrow_length + 1, origin_y, origin_z,
+    "X",
+    r=255, g=0, b=0,
+    size=1.5
+)
+
+# Y-axis (green arrow)
+WorldRender.add_arrow(
+    origin_x, origin_y, origin_z,
+    origin_x, origin_y + arrow_length, origin_z,
+    r=0, g=255, b=0,
+    width=3.0
+)
+WorldRender.add_text(
+    origin_x, origin_y + arrow_length + 1, origin_z,
+    "Y",
+    r=0, g=255, b=0,
+    size=1.5
+)
+
+# Z-axis (blue arrow)
+WorldRender.add_arrow(
+    origin_x, origin_y, origin_z,
+    origin_x, origin_y, origin_z + arrow_length,
+    r=0, g=0, b=255,
+    width=3.0
+)
+WorldRender.add_text(
+    origin_x, origin_y, origin_z + arrow_length + 1,
+    "Z",
+    r=0, g=0, b=255,
+    size=1.5
+)
+```
+
+### Area of Effect Visualization
+
+```python
+from worldrender import WorldRender
+
+# Center of effect
+center_x, center_y, center_z = 10, 64, 10
+radius = 8
+
+# Draw filled circle for area of effect
+WorldRender.add_circle(
+    center_x, center_y, center_z,
+    radius=radius,
+    r=255, g=0, b=0,
+    a=64,  # Very transparent
+    filled=True,
+    always_on_top=False
+)
+
+# Draw outline
+WorldRender.add_circle(
+    center_x, center_y, center_z,
+    radius=radius,
+    r=255, g=0, b=0,
+    a=255,
+    filled=False
+)
+
+# Mark center
+WorldRender.add_point(
+    center_x, center_y, center_z,
+    r=255, g=255, b=0,
+    size=8.0
+)
+
+# Add label
+WorldRender.add_text(
+    center_x, center_y + 1, center_z,
+    f"Radius: {radius}m",
+    r=255, g=255, b=0
+)
+```
+
+### Custom Rectangle Platform
+
+```python
+from worldrender import WorldRender
+
+# Define a platform at an angle
+Y = 64
+
+# Four corners of a tilted platform
+WorldRender.add_rect(
+    0.0, Y,     0.0,   # Corner 1
+    10.0, Y,    2.0,   # Corner 2
+    10.0, Y+2,  12.0,  # Corner 3
+    0.0, Y+2,   10.0,  # Corner 4
+    r=128, g=128, b=255,
+    a=128,
+    filled=True
+)
+
+# Mark the corners
+corners = [
+    (0.0, Y, 0.0),
+    (10.0, Y, 2.0),
+    (10.0, Y+2, 12.0),
+    (0.0, Y+2, 10.0),
+]
+
+for i, (x, y, z) in enumerate(corners, 1):
+    WorldRender.add_point(x, y, z, r=255, g=255, b=0, size=8.0)
+    WorldRender.add_text(x, y+1, z, f"Corner {i}", r=255, g=255, b=0)
+```
+
+## Advanced Patterns
+
+### Temporary Markers
+
+```python
+from worldrender import WorldRender
+from time import sleep
+
+def show_temporary_marker(x, y, z, duration=3):
+    """Show a marker for a specified duration."""
+    # Add marker
+    point_id = WorldRender.add_point(x, y, z, r=255, g=0, b=0, size=10.0)
+    text_id = WorldRender.add_text(x, y+1, z, "MARKER", r=255, g=0, b=0, size=2.0)
+    
+    # Wait
+    sleep(duration)
+    
+    # Remove marker
+    WorldRender.remove_point(id=point_id)
+    WorldRender.remove_text(id=text_id)
+
+# Usage
+show_temporary_marker(10, 64, 10, duration=5)
+```
+
+### Color-Coded Height Markers
+
+```python
+from worldrender import WorldRender
+
+def get_height_color(y):
+    """Return color based on Y level."""
+    if y < 0:
+        return (128, 0, 128)  # Purple for deep underground
+    elif y < 32:
+        return (139, 69, 19)  # Brown for underground
+    elif y < 64:
+        return (0, 255, 0)    # Green for surface
+    elif y < 128:
+        return (255, 255, 0)  # Yellow for elevated
+    else:
+        return (255, 255, 255)  # White for very high
+
+# Mark various heights
+for y in [0, 16, 32, 48, 64, 80, 96, 128]:
+    r, g, b = get_height_color(y)
+    WorldRender.add_block(0, y, 0, r=r, g=g, b=b)
+    WorldRender.add_text(2, y, 0, f"Y={y}", r=r, g=g, b=b)
+```
+
+### Interactive Toggle
+
+```python
+from worldrender import WorldRender
+
+# Enable toggle key (F12 by default)
+WorldRender.use_toggle_key(True)
+
+# Add some persistent markers
+WorldRender.add_box(0, 64, 0, 10, 74, 10, r=255, g=128, b=0)
+WorldRender.add_text(5, 76, 5, "Press F12 to toggle", r=255, g=255, b=0)
+
+# Now you can press F12 to show/hide all WorldRender shapes
+```
+
+## Performance Tips
+
+<Tip>
+- The default max size is 1024 shapes per type. When exceeded, the oldest shapes are automatically evicted.
+- Remove shapes you no longer need to keep the render list clean.
+- Use `show_wr(False)` to temporarily hide all shapes without removing them.
+</Tip>
+
+<Warning>
+Adding shapes at the exact same coordinates will replace the previous shape at that location. This is useful for updating visualizations but can cause unintended overwrites.
+</Warning>

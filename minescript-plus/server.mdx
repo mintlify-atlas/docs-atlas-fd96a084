@@ -1,0 +1,233 @@
+---
+title: Server
+description: Server information and player list management
+icon: server
+---
+
+The `Server` class provides methods for retrieving server information and managing the player list.
+
+## is_local
+
+Determines if the server is running locally (singleplayer).
+
+**Returns:** `bool` - True if no server data is available (indicating a local server), False otherwise.
+
+**Source:** `minescript_plus.py:990`
+
+```python
+import minescript_plus as ms
+
+if ms.Server.is_local():
+    print("Playing in singleplayer")
+else:
+    print("Playing on a remote server")
+```
+
+## get_ping
+
+Retrieves the ping value from the current server.
+
+**Returns:** `int | None` - The ping value if available, otherwise None.
+
+**Source:** `minescript_plus.py:1002`
+
+```python
+import minescript_plus as ms
+
+ping = ms.Server.get_ping()
+if ping is not None:
+    print(f"Server ping: {ping}ms")
+else:
+    print("Playing locally (no ping)")
+```
+
+## is_lan
+
+Determines if the server is running in LAN mode.
+
+**Returns:** `bool | None` - True if the server is in LAN mode, False if not, or None if server data is unavailable.
+
+**Source:** `minescript_plus.py:1015`
+
+```python
+import minescript_plus as ms
+
+lan = ms.Server.is_lan()
+if lan:
+    print("Connected to a LAN server")
+elif lan is False:
+    print("Not a LAN server")
+else:
+    print("Playing locally")
+```
+
+## is_realm
+
+Determines if the current server is a Realm.
+
+**Returns:** `bool | None` - True if the server is a Realm, False if not, or None if server data is unavailable.
+
+**Source:** `minescript_plus.py:1029`
+
+```python
+import minescript_plus as ms
+
+realm = ms.Server.is_realm()
+if realm:
+    print("Connected to a Minecraft Realm")
+elif realm is False:
+    print("Not a Realm")
+else:
+    print("Playing locally")
+```
+
+## get_tablist
+
+Retrieves a list of dictionaries containing information about all online players in the tab list.
+
+**Returns:** `list[dict[str, Any]]` - A list where each dictionary represents a player with the following keys:
+
+- **Name** (str): The display name of the player in the tab list, or their profile name if not set
+- **UUID** (str): The unique identifier of the player
+- **Latency** (int): The player's network latency
+- **GameMode** (str): The name of the player's current game mode
+- **SkinURL** (str): The URL to the player's skin texture
+- **TablistOrder** (int): The player's order in the tab list
+- **Team** (dict, optional): If the player is on a team, contains:
+  - **TeamName** (str): The display name of the team
+  - **Color** (str): The team's color
+
+**Source:** `minescript_plus.py:1042`
+
+```python
+import minescript_plus as ms
+
+# Get all online players
+players = ms.Server.get_tablist()
+
+print(f"Online players: {len(players)}")
+for player in players:
+    name = player["Name"]
+    latency = player["Latency"]
+    mode = player["GameMode"]
+    
+    print(f"- {name} (Ping: {latency}ms, Mode: {mode})")
+    
+    # Check if player is on a team
+    if "Team" in player:
+        team = player["Team"]
+        print(f"  Team: {team['TeamName']} ({team['Color']})")
+```
+
+## Complete Example: Server Dashboard
+
+```python
+import minescript_plus as ms
+import time
+
+def display_server_info():
+    """Display comprehensive server information."""
+    
+    # Check server type
+    if ms.Server.is_local():
+        print("=== Singleplayer ===")
+        return
+    
+    print("=== Server Information ===")
+    
+    # Ping
+    ping = ms.Server.get_ping()
+    if ping is not None:
+        print(f"Server Ping: {ping}ms")
+    
+    # Server type
+    if ms.Server.is_realm():
+        print("Server Type: Minecraft Realm")
+    elif ms.Server.is_lan():
+        print("Server Type: LAN Server")
+    else:
+        print("Server Type: Remote Server")
+    
+    # Player list
+    print("\n=== Online Players ===")
+    players = ms.Server.get_tablist()
+    print(f"Total: {len(players)} players\n")
+    
+    for player in players:
+        name = player["Name"]
+        latency = player["Latency"]
+        mode = player["GameMode"]
+        
+        print(f"{name}")
+        print(f"  Ping: {latency}ms")
+        print(f"  Mode: {mode}")
+        print(f"  UUID: {player['UUID']}")
+        
+        if "Team" in player:
+            team = player["Team"]
+            print(f"  Team: {team['TeamName']}")
+        print()
+
+display_server_info()
+```
+
+## Monitor Players
+
+```python
+import minescript_plus as ms
+import time
+
+def monitor_players(interval: int = 30):
+    """Monitor player joins and leaves."""
+    
+    if ms.Server.is_local():
+        print("Cannot monitor players in singleplayer")
+        return
+    
+    previous_players = set()
+    
+    while True:
+        # Get current players
+        current_list = ms.Server.get_tablist()
+        current_players = {p["Name"] for p in current_list}
+        
+        # Check for joins
+        joined = current_players - previous_players
+        for player in joined:
+            print(f"✅ {player} joined the server")
+        
+        # Check for leaves
+        left = previous_players - current_players
+        for player in left:
+            print(f"❌ {player} left the server")
+        
+        previous_players = current_players
+        time.sleep(interval)
+
+monitor_players()
+```
+
+## Find Specific Player
+
+```python
+import minescript_plus as ms
+
+def find_player(username: str) -> dict | None:
+    """Find a specific player in the tab list."""
+    players = ms.Server.get_tablist()
+    
+    for player in players:
+        if player["Name"].lower() == username.lower():
+            return player
+    
+    return None
+
+# Usage
+player_info = find_player("Notch")
+if player_info:
+    print(f"Found {player_info['Name']}")
+    print(f"Ping: {player_info['Latency']}ms")
+    print(f"Mode: {player_info['GameMode']}")
+else:
+    print("Player not found")
+```

@@ -1,0 +1,369 @@
+---
+title: World
+description: World information, weather, time, signs, and entity management
+icon: globe
+---
+
+The `World` class provides methods for interacting with the Minecraft world, including weather, time, signs, entities, and block operations.
+
+<Note>
+  The World class can be instantiated to get direct access to the world/level instance: `world = World()`
+</Note>
+
+## Weather
+
+### is_raining
+
+Checks if it is currently raining in the game world.
+
+**Returns:** `bool` - True if raining, False otherwise.
+
+**Source:** `minescript_plus.py:1097`
+
+```python
+import minescript_plus as ms
+
+if ms.World.is_raining():
+    print("It's raining!")
+```
+
+### is_thundering
+
+Checks if it is currently thundering in the game world.
+
+**Returns:** `bool` - True if thundering, False otherwise.
+
+**Source:** `minescript_plus.py:1107`
+
+```python
+import minescript_plus as ms
+
+if ms.World.is_thundering():
+    print("Thunder storm!")
+```
+
+## World Settings
+
+### is_hardcore
+
+Determines whether the current world is in hardcore mode.
+
+**Returns:** `bool` - True if hardcore, False otherwise.
+
+**Source:** `minescript_plus.py:1117`
+
+```python
+import minescript_plus as ms
+
+if ms.World.is_hardcore():
+    print("⚠️ Hardcore mode active!")
+```
+
+### get_difficulty
+
+Retrieves the current difficulty setting of the Minecraft world.
+
+**Returns:** `Difficulty` - The difficulty level.
+
+**Source:** `minescript_plus.py:1127`
+
+```python
+import minescript_plus as ms
+
+difficulty = ms.World.get_difficulty()
+print(f"Difficulty: {difficulty}")
+```
+
+### get_spawn_pos
+
+Retrieves the spawn position of the current level.
+
+**Returns:** `BlockPos` - The coordinates of the spawn position.
+
+**Source:** `minescript_plus.py:1137`
+
+```python
+import minescript_plus as ms
+
+spawn = ms.World.get_spawn_pos()
+print(f"World spawn: {spawn.getX()}, {spawn.getY()}, {spawn.getZ()}")
+```
+
+## Time
+
+### get_game_time
+
+Returns the current game time in ticks.
+
+**Returns:** `int` - The game time in ticks.
+
+**Source:** `minescript_plus.py:1147`
+
+```python
+import minescript_plus as ms
+
+game_time = ms.World.get_game_time()
+print(f"Game time: {game_time} ticks")
+```
+
+### get_day_time
+
+Returns the current day time in ticks.
+
+**Returns:** `int` - The day time in ticks (0-24000).
+
+**Source:** `minescript_plus.py:1154`
+
+```python
+import minescript_plus as ms
+
+day_time = ms.World.get_day_time()
+print(f"Day time: {day_time} ticks")
+
+# Convert to hours (0-24)
+hour = (day_time / 1000 + 6) % 24
+print(f"Time: {int(hour)}:00")
+```
+
+## Signs
+
+### get_sign_text
+
+Retrieves the text from both the front and back sides of a sign block.
+
+<ParamField path="x" type="int" default="None">
+  X coordinate of the sign. If None, uses targeted block.
+</ParamField>
+
+<ParamField path="y" type="int" default="None">
+  Y coordinate of the sign. If None, uses targeted block.
+</ParamField>
+
+<ParamField path="z" type="int" default="None">
+  Z coordinate of the sign. If None, uses targeted block.
+</ParamField>
+
+**Returns:** `list[str] | None` - A list containing 8 text lines (4 front, 4 back), or None if no sign found.
+
+**Source:** `minescript_plus.py:1161`
+
+```python
+import minescript_plus as ms
+
+# Read sign player is looking at
+text = ms.World.get_sign_text()
+if text:
+    print("Front side:")
+    for i in range(4):
+        print(f"  Line {i+1}: {text[i]}")
+    print("Back side:")
+    for i in range(4, 8):
+        print(f"  Line {i-3}: {text[i]}")
+
+# Read sign at specific coordinates
+text = ms.World.get_sign_text(100, 64, 200)
+```
+
+### get_targeted_sign_text
+
+Alias for `get_sign_text()` with no arguments (for backwards compatibility).
+
+**Returns:** `list[str] | None`
+
+**Source:** `minescript_plus.py:1188`
+
+### set_sign_text
+
+Set the text of a sign in the Minecraft client.
+
+<ParamField path="text" type="list[str]" required>
+  A list of exactly four strings for the sign lines (line 0 through line 3).
+</ParamField>
+
+<ParamField path="x" type="int" default="None">
+  X coordinate of the sign. If None, uses targeted block.
+</ParamField>
+
+<ParamField path="y" type="int" default="None">
+  Y coordinate of the sign. If None, uses targeted block.
+</ParamField>
+
+<ParamField path="z" type="int" default="None">
+  Z coordinate of the sign. If None, uses targeted block.
+</ParamField>
+
+<ParamField path="is_front" type="bool" default="None">
+  If True/False, selects front or back. If None, auto-detects based on player view.
+</ParamField>
+
+**Returns:** `bool` - True if successful, False if no sign found.
+
+**Source:** `minescript_plus.py:1193`
+
+<Warning>
+  This method must be called within the `render_loop` context.
+</Warning>
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    # Set text on sign player is looking at
+    text = ["Welcome to", "My Base", "", "Enjoy!"]
+    success = ms.World.set_sign_text(text)
+    
+    if success:
+        print("Sign updated!")
+    
+    # Set text on specific sign
+    ms.World.set_sign_text(text, 100, 64, 200, is_front=True)
+```
+
+## Entities
+
+### find_nearest_entity
+
+Finds the nearest entity matching the specified name and/or type.
+
+<ParamField path="name_str" type="str" default="">
+  A substring to match in the entity's name.
+</ParamField>
+
+<ParamField path="type_str" type="str" default="">
+  A substring to match in the entity's type.
+</ParamField>
+
+**Returns:** `EntityData | None` - The nearest matching entity, or None if not found.
+
+**Source:** `minescript_plus.py:1282`
+
+```python
+import minescript_plus as ms
+
+# Find nearest cow
+cow = ms.World.find_nearest_entity(type_str="cow")
+if cow:
+    print(f"Found cow at {cow.position}")
+
+# Find nearest villager
+villager = ms.World.find_nearest_entity(type_str="villager")
+
+# Find entity by name
+entity = ms.World.find_nearest_entity(name_str="Dinnerbone")
+```
+
+## Block Breaking
+
+### get_destroy_progress
+
+Returns the percentage of destruction of the block currently being broken.
+
+**Returns:** `float` - The destroy progress (0.0 = not being broken, 1.0 = fully broken).
+
+**Source:** `minescript_plus.py:1302`
+
+```python
+import minescript_plus as ms
+import time
+
+while True:
+    progress = ms.World.get_destroy_progress()
+    if progress > 0:
+        print(f"Breaking: {progress * 100:.1f}%")
+    time.sleep(0.1)
+```
+
+### get_destroy_stage
+
+Returns the stage of destruction of the block currently being broken.
+
+**Returns:** `int` - The destroy stage (0-9, 0 means not being broken).
+
+**Source:** `minescript_plus.py:1312`
+
+```python
+import minescript_plus as ms
+
+stage = ms.World.get_destroy_stage()
+print(f"Destroy stage: {stage}/9")
+```
+
+## Complete Example: World Info Display
+
+```python
+import minescript_plus as ms
+
+def display_world_info():
+    """Display comprehensive world information."""
+    
+    print("=== World Information ===")
+    
+    # World settings
+    if ms.World.is_hardcore():
+        print("Mode: ⚠️ HARDCORE")
+    else:
+        difficulty = ms.World.get_difficulty()
+        print(f"Difficulty: {difficulty}")
+    
+    # Spawn
+    spawn = ms.World.get_spawn_pos()
+    print(f"Spawn: {spawn.getX()}, {spawn.getY()}, {spawn.getZ()}")
+    
+    # Time
+    day_time = ms.World.get_day_time()
+    game_time = ms.World.get_game_time()
+    hour = (day_time / 1000 + 6) % 24
+    print(f"Time: {int(hour):02d}:00 (Day time: {day_time} ticks)")
+    print(f"Game time: {game_time} ticks")
+    
+    # Weather
+    weather = []
+    if ms.World.is_raining():
+        weather.append("Rain")
+    if ms.World.is_thundering():
+        weather.append("Thunder")
+    
+    if weather:
+        print(f"Weather: {', '.join(weather)}")
+    else:
+        print("Weather: Clear")
+
+display_world_info()
+```
+
+## Sign Reader Script
+
+```python
+import minescript_plus as ms
+from minescript import player_get_targeted_block
+import time
+
+def read_signs_continuously():
+    """Continuously display text from signs the player looks at."""
+    
+    print("Looking for signs... (Ctrl+C to stop)")
+    last_pos = None
+    
+    while True:
+        block = player_get_targeted_block()
+        
+        if block and "sign" in block.type:
+            current_pos = tuple(block.position)
+            
+            # Only read if it's a new sign
+            if current_pos != last_pos:
+                text = ms.World.get_sign_text()
+                if text:
+                    print(f"\n=== Sign at {current_pos} ===")
+                    for i in range(4):
+                        if text[i]:  # Only print non-empty lines
+                            print(f"  {text[i]}")
+                    last_pos = current_pos
+        else:
+            last_pos = None
+        
+        time.sleep(0.2)
+
+read_signs_continuously()
+```

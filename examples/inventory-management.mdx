@@ -1,0 +1,217 @@
+---
+title: "Inventory Management"
+description: "Learn how to interact with inventory screens, click slots, and swap items between inventory and hotbar"
+---
+
+## Introduction
+
+Minescript Plus provides powerful inventory management capabilities through the `Inventory` and `Screen` classes. This tutorial will show you how to interact with inventory screens programmatically.
+
+## Working with Inventory Screens
+
+<Steps>
+  <Step title="Open and wait for inventory">
+    To interact with inventory, you need to open the inventory screen and wait for it to be ready:
+
+    ```python
+    from time import sleep
+    from minescript import press_key_bind
+    from minescript_plus import Screen
+
+    # Open inventory
+    press_key_bind("key.inventory", True)
+    r = Screen.wait_screen()
+    press_key_bind("key.inventory", False)
+
+    if not r:
+        print("Can't find an inventory screen")
+    else:
+        print("Inventory is open!")
+        # Perform inventory operations here
+    ```
+
+    <Tip>
+      `Screen.wait_screen()` waits up to 500ms by default. You can customize the delay with `Screen.wait_screen(delay=1000)` for longer waits.
+    </Tip>
+  </Step>
+
+  <Step title="Click inventory slots">
+    Use `Inventory.click_slot()` to simulate mouse clicks on inventory slots:
+
+    ```python
+    from minescript_plus import Inventory, Screen
+    from minescript import press_key_bind
+
+    press_key_bind("key.inventory", True)
+    if Screen.wait_screen():
+        press_key_bind("key.inventory", False)
+        
+        # Left click on slot 10
+        Inventory.click_slot(10)
+        
+        # Right click on slot 15
+        Inventory.click_slot(15, right_button=True)
+        
+        Screen.close_screen()
+    ```
+
+    <Note>
+      Slot indices typically range from 0-40 for player inventory screens.
+    </Note>
+  </Step>
+
+  <Step title="Shift-click slots">
+    Quickly move items with shift-click:
+
+    ```python
+    from minescript_plus import Inventory, Screen
+    from minescript import press_key_bind
+
+    press_key_bind("key.inventory", True)
+    if Screen.wait_screen():
+        press_key_bind("key.inventory", False)
+        
+        # Shift-click slot 20 to move items
+        Inventory.shift_click_slot(20)
+        
+        Screen.close_screen()
+    ```
+  </Step>
+
+  <Step title="Swap inventory and hotbar items">
+    The most common inventory operation is swapping items between inventory slots and hotbar slots:
+
+    ```python swap.py
+    from time import sleep
+    from minescript import press_key_bind
+    from minescript_plus import Inventory, Screen
+
+    press_key_bind("key.inventory", True)
+    r = Screen.wait_screen()
+    press_key_bind("key.inventory", False)
+
+    if not r:
+        print("Can't find an inventory screen")
+    else:
+        # Swap slot 22 (inventory) with slot 4 (hotbar)
+        Inventory.inventory_hotbar_swap(22, 4)
+        sleep(0.05)
+        Screen.close_screen()
+    ```
+
+    <Info>
+      - Inventory slots: 9-40
+      - Hotbar slots: 0-8
+    </Info>
+  </Step>
+
+  <Step title="Get inventory items">
+    Read the current inventory state using base Minescript functions:
+
+    ```python
+    from minescript import player_inventory
+
+    # Get all items in player inventory
+    inventory = player_inventory()
+    
+    for slot, item in enumerate(inventory):
+        if item:
+            print(f"Slot {slot}: {item.name} x{item.count}")
+    ```
+  </Step>
+</Steps>
+
+## Working with Containers
+
+<Steps>
+  <Step title="Access container items">
+    When a container (chest, furnace, etc.) is open, you can access its items:
+
+    ```python
+    from minescript import container_get_items, screen_name
+
+    # Check if a container screen is open
+    current_screen = screen_name()
+    if current_screen:
+        print(f"Screen open: {current_screen}")
+        
+        # Get items from the open container
+        items = container_get_items()
+        if items:
+            for slot, item in enumerate(items):
+                if item:
+                    print(f"Container slot {slot}: {item.name} x{item.count}")
+    ```
+  </Step>
+
+  <Step title="Wait for specific screen">
+    You can wait for a specific screen to open:
+
+    ```python
+    from minescript_plus import Screen
+
+    # Wait for a chest screen
+    if Screen.wait_screen("Chest", delay=1000):
+        print("Chest is open!")
+        # Perform operations on chest
+        Screen.close_screen()
+    else:
+        print("Chest screen did not open")
+    ```
+  </Step>
+</Steps>
+
+## Complete Example: Auto-Organize Hotbar
+
+Here's a practical example that automatically organizes your hotbar:
+
+```python organize_hotbar.py
+from time import sleep
+from minescript import press_key_bind, player_inventory
+from minescript_plus import Inventory, Screen
+
+def organize_hotbar():
+    """Move items from inventory to empty hotbar slots."""
+    # Open inventory
+    press_key_bind("key.inventory", True)
+    r = Screen.wait_screen()
+    press_key_bind("key.inventory", False)
+    
+    if not r:
+        print("Failed to open inventory")
+        return
+    
+    # Get current inventory state
+    inv = player_inventory()
+    
+    # Find empty hotbar slots (0-8)
+    empty_hotbar_slots = [i for i in range(9) if not inv[i]]
+    
+    # Find filled inventory slots (9-40)
+    filled_inv_slots = [i for i in range(9, 41) if inv[i]]
+    
+    # Swap items to fill hotbar
+    for hotbar_slot, inv_slot in zip(empty_hotbar_slots, filled_inv_slots):
+        print(f"Moving slot {inv_slot} to hotbar slot {hotbar_slot}")
+        Inventory.inventory_hotbar_swap(inv_slot, hotbar_slot)
+        sleep(0.05)
+    
+    # Close inventory
+    sleep(0.1)
+    Screen.close_screen()
+    print("Hotbar organized!")
+
+if __name__ == "__main__":
+    organize_hotbar()
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Event Handling" icon="bolt" href="/examples/event-handling">
+    React to game events automatically
+  </Card>
+  <Card title="Trading" icon="handshake" href="/minescript-plus/trading">
+    Learn about the Trading API
+  </Card>
+</CardGroup>

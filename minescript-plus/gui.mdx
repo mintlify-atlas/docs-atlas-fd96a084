@@ -1,0 +1,228 @@
+---
+title: Gui
+description: Methods for working with title, subtitle, and actionbar messages
+icon: signs-post
+---
+
+The `Gui` class provides methods for getting and setting title, subtitle, and actionbar text in Minecraft.
+
+<Note>
+  All methods in the Gui class must be called within the `render_loop` context.
+</Note>
+
+## Getting Text
+
+### get_title
+
+Retrieves the current title text displayed on screen.
+
+**Returns:** `str | None` - The title text, or None if not available.
+
+**Source:** `minescript_plus.py:642`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    title = ms.Gui.get_title()
+    if title:
+        print(f"Current title: {title}")
+```
+
+### get_subtitle
+
+Retrieves the current subtitle text displayed on screen.
+
+**Returns:** `str | None` - The subtitle text, or None if not available.
+
+**Source:** `minescript_plus.py:655`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    subtitle = ms.Gui.get_subtitle()
+    if subtitle:
+        print(f"Current subtitle: {subtitle}")
+```
+
+### get_actionbar
+
+Retrieves and clears the current actionbar (overlay message) text.
+
+**Returns:** `str | None` - The current overlay message string if present, otherwise None.
+
+**Source:** `minescript_plus.py:668`
+
+<Warning>
+  This method clears the actionbar after reading it.
+</Warning>
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    actionbar = ms.Gui.get_actionbar()
+    if actionbar:
+        print(f"Actionbar message: {actionbar}")
+```
+
+## Setting Text
+
+### set_title
+
+Sets the title to the specified text.
+
+<ParamField path="text" type="str" required>
+  The text to set as the title.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:682`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    ms.Gui.set_title("Welcome to the Server!")
+```
+
+### set_subtitle
+
+Sets the subtitle to the specified text.
+
+<ParamField path="text" type="str" required>
+  The text to set as the subtitle.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:695`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    ms.Gui.set_subtitle("Enjoy your stay")
+```
+
+### set_actionbar
+
+Sets the actionbar to the specified text.
+
+<ParamField path="text" type="str" required>
+  The text to set as the actionbar.
+</ParamField>
+
+<ParamField path="tinted" type="bool" default="False">
+  Whether the text should be tinted.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:708`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    ms.Gui.set_actionbar("You are mining!")
+```
+
+## Title Timing
+
+### set_title_times
+
+Sets the timing for the title and subtitle display.
+
+<ParamField path="fadeInTicks" type="int" required>
+  Number of ticks for the title to fade in.
+</ParamField>
+
+<ParamField path="stayTicks" type="int" required>
+  Number of ticks for the title to stay visible.
+</ParamField>
+
+<ParamField path="fadeOutTicks" type="int" required>
+  Number of ticks for the title to fade out.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:721`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    # Fade in 10 ticks, stay 70 ticks, fade out 20 ticks
+    ms.Gui.set_title_times(10, 70, 20)
+    ms.Gui.set_title("Custom Timing")
+```
+
+### reset_title_times
+
+Resets the title and subtitle display times to the default values.
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:736`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    ms.Gui.reset_title_times()
+```
+
+### clear_titles
+
+Clears the title and subtitle from the screen.
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:746`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    ms.Gui.clear_titles()
+```
+
+## Complete Example
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+import time
+
+with render_loop:
+    # Set custom timing
+    ms.Gui.set_title_times(10, 100, 20)
+    
+    # Display title and subtitle
+    ms.Gui.set_title("Quest Started")
+    ms.Gui.set_subtitle("Find the hidden treasure")
+    
+    time.sleep(2)
+    
+    # Display actionbar message
+    ms.Gui.set_actionbar("Progress: 0/10")
+    
+    time.sleep(3)
+    
+    # Clear everything
+    ms.Gui.clear_titles()
+    ms.Gui.reset_title_times()
+```

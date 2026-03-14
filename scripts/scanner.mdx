@@ -1,0 +1,155 @@
+---
+title: 'Block Scanner'
+description: 'Detect and locate specific blocks around the player in real-time'
+---
+
+## Overview
+
+The Block Scanner is a real-time detection script that continuously monitors a configurable radius around the player for specific block types. When a target block is discovered, it displays the block type and coordinates in the chat, making it perfect for finding rare structures, resources, or specific locations.
+
+## Features
+
+- **Configurable radius**: Scan up to 64 blocks in all directions (customizable)
+- **Toggle on/off**: Enable or disable scanning without stopping the service
+- **Multiple block types**: Monitor for multiple block types simultaneously
+- **One-time notifications**: Each block location is reported only once
+- **Key bindings**: Control the scanner with customizable keyboard shortcuts
+
+## Configuration
+
+### Target Blocks
+
+By default, the scanner searches for the following blocks:
+
+```python
+target_blocks = {
+    "minecraft:end_portal_frame",
+    "minecraft:infested_stone_bricks",
+    "minecraft:infested_cobblestone",
+    "minecraft:infested_mossy_stone_bricks",
+    "minecraft:suspicious_gravel",
+    "minecraft:suspicious_sand",
+    "minecraft:decorated_pot",
+    "minecraft:mud_bricks",
+    "minecraft:terracotta",
+    "minecraft:cobbled_deepslate",
+    "minecraft:chest",
+    "minecraft:shulker_box"
+}
+```
+
+<Note>
+You can customize this set by editing `scanner.py` and adding or removing block IDs. Use the full Minecraft namespaced ID format (e.g., `minecraft:diamond_ore`).
+</Note>
+
+### Scan Radius
+
+The default scanning radius is **64 blocks** in all directions:
+
+```python
+radius = 64
+```
+
+This creates a cube of 128×128×128 blocks centered on the player. You can adjust this value, but larger radii may impact performance.
+
+### Key Bindings
+
+The scanner uses two key bindings based on GLFW key codes:
+
+```python
+KEY.TOGGLE = 332    # * (Asterisk key)
+KEY.STOP = 333      # - (Minus key)
+```
+
+<Note>
+To customize key bindings, replace the numeric values with [GLFW key codes](https://www.glfw.org/docs/3.4/group__keys.html). For example, use `256` for the Escape key or `340` for the Left Shift key.
+</Note>
+
+## Usage
+
+<Steps>
+  <Step title="Start the Scanner Service">
+    Run the script to start the scanner service in the background:
+    
+    ```bash
+    minescript run scanner.py
+    ```
+    
+    You'll see a confirmation message: "Scanner Service started."
+  </Step>
+
+  <Step title="Toggle Scanning">
+    Press the **`*`** (asterisk) key to activate the scanner:
+    
+    - **ON**: Scanner will display blocks as they're discovered
+    - **OFF**: Scanner pauses but the service remains active
+    
+    The current state will be shown in chat (green for ON, red for OFF).
+  </Step>
+
+  <Step title="View Detected Blocks">
+    As you move around with the scanner enabled, newly discovered target blocks will appear in chat:
+    
+    ```
+    minecraft:chest (123, 64, -456)
+    minecraft:suspicious_gravel (125, 62, -450)
+    ```
+    
+    Each location is reported only once, even if you revisit the area.
+  </Step>
+
+  <Step title="Stop the Service">
+    Press the **`-`** (minus) key to terminate the scanner service completely.
+  </Step>
+</Steps>
+
+## How It Works
+
+The scanner operates by:
+
+1. Reading the player's current position every 0.1 seconds
+2. Using `BlockPack.read_world()` to capture all blocks within the configured radius
+3. Parsing the block data to identify target blocks
+4. Comparing coordinates against previously found blocks
+5. Displaying new discoveries with their coordinates in chat
+
+```python
+pos = player_position()
+x = round(pos[0])
+y = round(pos[1])
+z = round(pos[2])
+
+blockpack = BlockPack.read_world(
+    (x-radius, y-radius, z-radius), 
+    (x+radius, y+radius, z+radius)
+)
+```
+
+## Performance Considerations
+
+- **Scan interval**: The script checks for blocks every 0.1 seconds when active
+- **Radius impact**: Larger radii require more processing power
+- **Memory usage**: The script maintains a set of all discovered block positions
+
+<Note>
+If you experience performance issues, try reducing the `radius` value or increasing the `sleep(.1)` duration at the end of the script.
+</Note>
+
+## Common Use Cases
+
+- **Structure finding**: Locate strongholds, trial chambers, or desert temples
+- **Resource detection**: Find chests, shulker boxes, or decorated pots
+- **Trail archaeology**: Detect suspicious sand and gravel for archaeology sites
+- **Base security**: Monitor for specific blocks near your base
+
+## Troubleshooting
+
+### Scanner not detecting blocks
+- Ensure the scanner is toggled ON (press `*`)
+- Verify the blocks you're looking for are in the `target_blocks` set
+- Check that you're within the configured radius of the target blocks
+
+### Key bindings not working
+- Confirm Minescript has keyboard focus
+- Verify the key codes match your keyboard layout
+- Check for conflicts with other Minescript scripts

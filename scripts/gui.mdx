@@ -1,0 +1,428 @@
+---
+title: 'GUI Example'
+description: 'Create simple graphical interfaces with the lib_screen library'
+---
+
+## Overview
+
+The GUI script demonstrates how to create simple graphical user interfaces using the `lib_screen` library, which provides a Tkinter-based wrapper for building interactive screens in Minescript. This example shows button creation, layout management, and integration with Minescript functions.
+
+## Features
+
+- **Simple GUI creation**: Build interfaces with minimal boilerplate
+- **Multiple widget types**: Buttons, labels, text inputs, and checkboxes
+- **Flexible layouts**: Position widgets using absolute coordinates or relative positioning
+- **Minescript integration**: Execute Minescript commands from GUI buttons
+- **Input dialogs**: Get user input through popup dialogs
+
+## Prerequisites
+
+<Note>
+This script requires the following dependencies:
+
+- `lib_screen.py` - The GUI library (included in the lib folder)
+- `minescript_plus.py` - Extended Minescript utilities
+
+Both should be available in your Minescript environment.
+</Note>
+
+## Basic Example
+
+Here's the complete example from `gui.py`:
+
+```python
+from minescript import execute
+from lib_screen import Screen
+from minescript_plus import get_job_id
+
+gui = Screen("Minescript GUI", 240, 120)
+
+def button_on_click(idx: int):
+    match idx:
+        case 0:
+            job_name = gui.input_dialog(" ", "Kill job by name: ")
+            job_id = get_job_id(job_name)
+            if job_id is not None:
+                execute(f"\\killjob {job_id}")
+        case 1:
+            ...
+
+button1 = gui.add_button(on_click=lambda: button_on_click(0), text="Button 1")
+button1.x = 5
+button1.y = 5
+button2 = gui.add_button(on_click=lambda: button_on_click(1), text="Button 2", right=button1)
+button3 = gui.add_button(on_click=lambda: button_on_click(2), text="Button 3", down=button1)
+button4 = gui.add_button(on_click=lambda: button_on_click(3), text="Button 4", right=button3)
+button5 = gui.add_button(on_click=lambda: button_on_click(4), text="Button 5", down=button3)
+button6 = gui.add_button(on_click=lambda: button_on_click(5), text="Button 6", right=button5)
+button7 = gui.add_button(on_click=lambda: button_on_click(6), text="Button 7", down=button5)
+button8 = gui.add_button(on_click=lambda: button_on_click(7), text="Button 8", right=button7)
+
+# Show screen
+gui.show()
+```
+
+## Creating a Screen
+
+### Initialize the Screen
+
+```python
+gui = Screen(title="My GUI", width=320, height=240)
+```
+
+**Parameters:**
+- `title`: Window title (default: "")
+- `width`: Window width in pixels (default: 320)
+- `height`: Window height in pixels (default: 240)
+- `x`: Window X position (default: centered)
+- `y`: Window Y position (default: centered)
+
+<Note>
+The screen is automatically centered on the display unless you specify `x` and `y` coordinates.
+</Note>
+
+## Adding Widgets
+
+### Buttons
+
+```python
+button = gui.add_button(
+    on_click=my_function,
+    text="Click Me",
+    width=100,
+    height=20,
+    x=10,
+    y=10
+)
+```
+
+**Parameters:**
+- `on_click`: Callback function (optional)
+- `text`: Button label
+- `width`: Width in pixels (auto-sized if None)
+- `height`: Height in pixels (default: 20)
+- `x`, `y`: Position coordinates
+- `down`: Position below another widget
+- `right`: Position to the right of another widget
+
+### Labels
+
+```python
+label = gui.add_label(
+    text="Status: Ready",
+    x=10,
+    y=50
+)
+```
+
+Labels display static or dynamic text. Update the text with:
+
+```python
+label.text = "Status: Running"
+```
+
+### Text Inputs
+
+```python
+text_input = gui.text_input(
+    on_change=on_input_change,
+    text="Default value",
+    width=150,
+    x=10,
+    y=80
+)
+```
+
+Get the current value:
+
+```python
+user_input = text_input.value
+```
+
+### Checkboxes
+
+```python
+checkbox = gui.add_checkbox(
+    on_click=on_checkbox_toggle,
+    text="Enable feature",
+    x=10,
+    y=110
+)
+```
+
+Check if it's selected:
+
+```python
+if checkbox.value:
+    # Checkbox is checked
+```
+
+## Layout Management
+
+### Absolute Positioning
+
+Position widgets using exact coordinates:
+
+```python
+button.x = 10
+button.y = 20
+```
+
+### Relative Positioning
+
+Position widgets relative to other widgets:
+
+```python
+# Position button2 to the right of button1
+button2 = gui.add_button(text="Button 2", right=button1)
+
+# Position button3 below button1
+button3 = gui.add_button(text="Button 3", down=button1)
+
+# Combine: position button4 to the right of button3
+button4 = gui.add_button(text="Button 4", right=button3)
+```
+
+<Note>
+When using `right` or `down`, the library automatically calculates positions with a 10-pixel gap between widgets.
+</Note>
+
+## Input Dialogs
+
+Prompt the user for input with a dialog box:
+
+```python
+user_input = gui.input_dialog(title="Input Required", prompt="Enter your name:")
+
+if user_input is not None:
+    print(f"User entered: {user_input}")
+else:
+    print("User cancelled")
+```
+
+The dialog returns:
+- A string if the user enters text and clicks OK
+- `None` if the user cancels
+
+## Widget Properties
+
+### Modifying Widget Properties
+
+All widgets support these properties:
+
+```python
+# Position
+widget.x = 50
+widget.y = 100
+
+# Size
+widget.width = 150
+widget.height = 30
+
+# Text (buttons, labels)
+widget.text = "New Text"
+
+# Value (inputs, checkboxes)
+widget.value = "New value"
+```
+
+### Styling Widgets
+
+Apply Tkinter styles directly:
+
+```python
+button.style(
+    bg="#4CAF50",        # Background color
+    fg="white",          # Foreground (text) color
+    font=("Arial", 12),  # Font
+    relief="raised"      # Border style
+)
+```
+
+## Usage
+
+<Steps>
+  <Step title="Create the GUI">
+    Initialize a `Screen` object and add widgets:
+    
+    ```python
+    from lib_screen import Screen
+    
+    gui = Screen("My Tool", 300, 200)
+    button = gui.add_button(text="Click Me", x=10, y=10)
+    ```
+  </Step>
+
+  <Step title="Define Callbacks">
+    Create functions that will be called when users interact with widgets:
+    
+    ```python
+    def on_button_click():
+        print("Button clicked!")
+    
+    button = gui.add_button(on_click=on_button_click, text="Click Me")
+    ```
+  </Step>
+
+  <Step title="Show the Screen">
+    Display the GUI and wait for user interaction:
+    
+    ```python
+    gui.show()
+    ```
+    
+    <Note>
+    The `show()` method blocks until the window is closed. The script will not continue until the user closes the GUI or presses Escape.
+    </Note>
+  </Step>
+</Steps>
+
+## Integration with Minescript
+
+### Executing Minescript Commands
+
+Call Minescript commands from button callbacks:
+
+```python
+from minescript import execute
+
+def teleport_home():
+    execute("/tp @s 0 64 0")
+
+gui.add_button(on_click=teleport_home, text="Teleport Home")
+```
+
+### Using Minescript Plus Functions
+
+The example uses `get_job_id()` from `minescript_plus.py`:
+
+```python
+from minescript_plus import get_job_id
+
+job_name = gui.input_dialog(" ", "Kill job by name: ")
+job_id = get_job_id(job_name)
+if job_id is not None:
+    execute(f"\\killjob {job_id}")
+```
+
+## Key Bindings
+
+The Screen class includes built-in key bindings:
+
+- **Escape**: Close the window
+
+You can add custom key bindings by accessing the native Tkinter root:
+
+```python
+gui.native.bind("<Return>", lambda e: on_enter_pressed())
+```
+
+## Complete Example: Simple Control Panel
+
+```python
+from lib_screen import Screen
+from minescript import execute, echo
+
+gui = Screen("Control Panel", 300, 250)
+
+# Title
+title = gui.add_label(text="Minescript Control Panel", x=10, y=10)
+title.style(font=("Arial", 14, "bold"))
+
+# Teleport section
+gui.add_label(text="Quick Teleport:", x=10, y=50)
+btn_spawn = gui.add_button(
+    on_click=lambda: execute("/tp @s 0 64 0"),
+    text="Spawn",
+    x=10,
+    y=75
+)
+btn_custom = gui.add_button(
+    on_click=teleport_custom,
+    text="Custom...",
+    right=btn_spawn
+)
+
+# Game mode section
+gui.add_label(text="Game Mode:", x=10, y=115)
+btn_creative = gui.add_button(
+    on_click=lambda: execute("/gamemode creative"),
+    text="Creative",
+    x=10,
+    y=140
+)
+btn_survival = gui.add_button(
+    on_click=lambda: execute("/gamemode survival"),
+    text="Survival",
+    right=btn_creative
+)
+
+# Toggle feature
+auto_feed = gui.add_checkbox(
+    on_click=toggle_auto_feed,
+    text="Auto-feed enabled",
+    x=10,
+    y=180
+)
+
+def teleport_custom():
+    coords = gui.input_dialog("Teleport", "Enter coordinates (x y z):")
+    if coords:
+        execute(f"/tp @s {coords}")
+
+def toggle_auto_feed():
+    if auto_feed.value:
+        echo("Auto-feed enabled")
+        # Start auto-feed logic
+    else:
+        echo("Auto-feed disabled")
+        # Stop auto-feed logic
+
+gui.show()
+```
+
+## Window Properties
+
+The Screen class provides properties to control the window:
+
+```python
+# Modify window properties
+gui.width = 400
+gui.height = 300
+gui.title = "Updated Title"
+
+# Close programmatically
+gui.close()
+```
+
+## Troubleshooting
+
+### GUI not appearing
+
+- Ensure `lib_screen.py` is in your Python path or the same directory
+- Check that Tkinter is installed (it's usually included with Python)
+- Verify no errors in the console output
+
+### Callbacks not working
+
+- Ensure callback functions are defined before creating widgets
+- Check for exceptions in callback functions (add try/except blocks)
+- Verify lambda functions are capturing variables correctly
+
+### Layout issues
+
+- Use `print(widget.x, widget.y)` to debug positions
+- Remember that `right` and `down` add a 10-pixel gap automatically
+- Check that parent widgets exist before using `right=` or `down=`
+
+## Best Practices
+
+1. **Keep it simple**: GUIs work best for simple control panels and dialogs
+2. **Error handling**: Wrap Minescript commands in try/except blocks
+3. **User feedback**: Use `echo()` to confirm actions to the user
+4. **Input validation**: Validate user input from dialogs before using it
+5. **Resource cleanup**: The library handles cleanup automatically when the window closes
+
+<Note>
+The GUI runs in the same process as Minescript, so long-running operations in callbacks will freeze the interface. For heavy tasks, consider running them in the background and updating the GUI when complete.
+</Note>

@@ -1,0 +1,254 @@
+---
+title: Text Rendering
+description: Add floating text labels in the Minecraft world
+---
+
+## Overview
+
+WorldRender supports rendering billboard text that always faces the player. Text labels are perfect for debugging, annotations, and in-world information displays.
+
+## add_text
+
+Add a floating text label at the specified world coordinates.
+
+```python
+WorldRender.add_text(x, y, z, text, r=255, g=255, b=255, a=255, size=1.0, always_on_top=True)
+```
+
+### Parameters
+
+<ParamField path="x" type="float" required>
+  X coordinate in world space
+</ParamField>
+
+<ParamField path="y" type="float" required>
+  Y coordinate in world space
+</ParamField>
+
+<ParamField path="z" type="float" required>
+  Z coordinate in world space
+</ParamField>
+
+<ParamField path="text" type="str" required>
+  The text to render
+</ParamField>
+
+<ParamField path="r" type="int" default="255">
+  Red channel value (0-255)
+</ParamField>
+
+<ParamField path="g" type="int" default="255">
+  Green channel value (0-255)
+</ParamField>
+
+<ParamField path="b" type="int" default="255">
+  Blue channel value (0-255)
+</ParamField>
+
+<ParamField path="a" type="int" default="255">
+  Alpha/opacity channel (0-255, where 255 is opaque)
+</ParamField>
+
+<ParamField path="size" type="float" default="1.0">
+  Scale/size multiplier for the rendered text
+</ParamField>
+
+<ParamField path="always_on_top" type="bool" default="true">
+  If True, renders through blocks and is always visible
+</ParamField>
+
+### Returns
+
+`int` - Unique ID assigned to this text label
+
+## remove_text
+
+Remove a text label by coordinates or by ID.
+
+```python
+WorldRender.remove_text(x=None, y=None, z=None, id=None)
+```
+
+### Parameters
+
+<ParamField path="x" type="float">
+  X coordinate in world space
+</ParamField>
+
+<ParamField path="y" type="float">
+  Y coordinate in world space
+</ParamField>
+
+<ParamField path="z" type="float">
+  Z coordinate in world space
+</ParamField>
+
+<ParamField path="id" type="int">
+  Unique ID returned by add_text. If provided, coordinates are ignored
+</ParamField>
+
+## get_text_list
+
+Returns the internal mapping of text labels currently tracked.
+
+```python
+WorldRender.get_text_list()
+```
+
+### Returns
+
+`dict` - Mapping where keys are int IDs and values are `(x, y, z, text, r, g, b, a, size, always_on_top)` tuples
+
+## Examples
+
+### Basic Text Label
+
+```python
+from worldrender import WorldRender
+
+# Add a yellow text label
+text_id = WorldRender.add_text(
+    0.5, 65.0, 0.5,
+    "Hello WorldRender!",
+    r=255, g=255, b=0
+)
+```
+
+### Scaled Text
+
+```python
+# Add larger text
+WorldRender.add_text(
+    10.0, 70.0, 10.0,
+    "LARGE TEXT",
+    size=2.5,
+    r=255, g=128, b=0
+)
+
+# Add smaller text
+WorldRender.add_text(
+    5.0, 65.0, 5.0,
+    "small text",
+    size=0.5,
+    r=128, g=128, b=255
+)
+```
+
+### Semi-Transparent Text
+
+```python
+# Add text with 50% opacity
+WorldRender.add_text(
+    0.0, 64.0, 0.0,
+    "Semi-transparent",
+    a=128
+)
+```
+
+### Coordinate Labels
+
+```python
+# Label multiple positions
+positions = [
+    (10, 64, 10, "Point A"),
+    (20, 64, 10, "Point B"),
+    (15, 64, 20, "Point C"),
+]
+
+for x, y, z, label in positions:
+    WorldRender.add_text(
+        x + 0.5, y + 1.5, z + 0.5,
+        label,
+        r=255, g=255, b=255,
+        size=1.2
+    )
+```
+
+### Dynamic Text Updates
+
+```python
+# Update text by removing and re-adding at same position
+x, y, z = 0.5, 65.0, 0.5
+
+# First text
+WorldRender.add_text(x, y, z, "Starting...")
+
+# Update (automatically replaces old text at same position)
+WorldRender.add_text(x, y, z, "Processing...")
+
+# Final update
+WorldRender.add_text(x, y, z, "Complete!", r=0, g=255, b=0)
+```
+
+### Text with Marker
+
+```python
+# Combine text with a point marker
+x, y, z = 5.0, 65.0, 5.0
+
+# Add point
+WorldRender.add_point(x, y, z, r=255, g=0, b=0, size=6.0)
+
+# Add text above point
+WorldRender.add_text(
+    x, y + 0.5, z,
+    "Important Location",
+    r=255, g=0, b=0,
+    size=1.5
+)
+```
+
+### Removing Text
+
+<CodeGroup>
+
+```python Remove by ID
+# Store the ID when creating
+text_id = WorldRender.add_text(0.5, 65.0, 0.5, "Temporary Label")
+
+# Remove using the ID
+WorldRender.remove_text(id=text_id)
+```
+
+```python Remove by Coordinates
+# Add text
+WorldRender.add_text(0.5, 65.0, 0.5, "Temporary Label")
+
+# Remove using same coordinates
+WorldRender.remove_text(0.5, 65.0, 0.5)
+```
+
+</CodeGroup>
+
+## Best Practices
+
+<Tip>
+- Use `size` to make important labels stand out
+- Position text slightly above markers for better visibility
+- Use contrasting colors for text on different backgrounds
+- Keep text short and concise for readability
+</Tip>
+
+<Warning>
+Text at the same coordinates will be automatically replaced. If you need multiple text labels close together, offset their Y coordinates slightly.
+</Warning>
+
+## Color Presets
+
+```python
+# Common color presets
+COLORS = {
+    "white":   (255, 255, 255),
+    "red":     (255, 0, 0),
+    "green":   (0, 255, 0),
+    "blue":    (0, 0, 255),
+    "yellow":  (255, 255, 0),
+    "cyan":    (0, 255, 255),
+    "magenta": (255, 0, 255),
+    "orange":  (255, 128, 0),
+}
+
+# Usage
+r, g, b = COLORS["yellow"]
+WorldRender.add_text(0, 64, 0, "Yellow Text", r=r, g=g, b=b)
+```

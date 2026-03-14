@@ -1,0 +1,164 @@
+---
+title: "Basic Usage"
+description: "Get started with Minescript Plus by learning the fundamentals of importing and using basic API calls"
+---
+
+## Introduction
+
+This tutorial will walk you through the basics of using Minescript Plus, including importing the library and making your first API calls.
+
+## Prerequisites
+
+Before you begin, ensure you have:
+- Minecraft 1.21.8 or later
+- Minescript 5.0b6 or later
+- Python 3.10 or later
+- Mappings installed (run `\install_mappings` in Minecraft chat)
+
+## Getting Started
+
+<Steps>
+  <Step title="Import the library">
+    Start by importing `minescript_plus` in your Python script:
+
+    ```python
+    from minescript_plus import Gui, Key, Player, World
+    ```
+
+    You can also import specific modules from the base `minescript` library:
+
+    ```python
+    from minescript import player_position, player_name
+    ```
+  </Step>
+
+  <Step title="Display GUI messages">
+    Use the `Gui` class to display titles, subtitles, and action bar messages:
+
+    ```python
+    from time import sleep
+    from minescript_plus import Gui
+
+    # Display an action bar message
+    Gui.set_actionbar("Welcome to Minescript Plus!", False)
+    sleep(2)
+
+    # Set custom timing for titles (fadeIn, stay, fadeOut in ticks)
+    Gui.set_title_times(30, 20, 30)
+
+    # Display title and subtitle
+    Gui.set_title("Hello World")
+    Gui.set_subtitle("Learning Minescript Plus")
+    sleep(2)
+
+    # Clear all titles
+    Gui.clear_titles()
+    ```
+
+    <Tip>
+      Set `tinted` to `True` in `set_actionbar()` for a darker background behind the text.
+    </Tip>
+  </Step>
+
+  <Step title="Read GUI values">
+    You can also retrieve current GUI text values:
+
+    ```python
+    from minescript_plus import Gui
+
+    # Get current values
+    print(f"Title: {Gui.get_title()}")
+    print(f"Subtitle: {Gui.get_subtitle()}")
+    print(f"Actionbar: {Gui.get_actionbar()}")
+    ```
+  </Step>
+
+  <Step title="Simulate key presses">
+    Use the `Key` class to simulate keyboard input:
+
+    ```python
+    from time import sleep
+    from minescript_plus import Key
+
+    # Press and release the 'E' key (opens inventory)
+    sleep(1)
+    Key.press_key("key.keyboard.e", True)  # Press down
+    sleep(0.1)
+    Key.press_key("key.keyboard.e", False)  # Release
+    ```
+
+    <Note>
+      See the [Minecraft key codes reference](https://minecraft.wiki/w/Key_codes#Current) for available key names.
+    </Note>
+  </Step>
+
+  <Step title="Get player information">
+    Access player data using the base `minescript` functions:
+
+    ```python
+    from minescript import player_position, player_name, player_hand_items
+
+    # Get player name
+    name = player_name()
+    print(f"Player: {name}")
+
+    # Get player position
+    x, y, z = player_position()
+    print(f"Position: {x}, {y}, {z}")
+
+    # Get items in hands
+    main_hand, off_hand = player_hand_items()
+    print(f"Main hand: {main_hand}")
+    print(f"Off hand: {off_hand}")
+    ```
+  </Step>
+</Steps>
+
+## Complete Example
+
+Here's a complete script that demonstrates basic usage:
+
+```python title-actionbar.py
+from time import sleep
+from minescript_plus import Gui
+
+print(f"{Gui.get_actionbar() = }")
+print(f"{Gui.get_title() = }")
+print(f"{Gui.get_subtitle() = }")
+
+Gui.set_actionbar("ACTIONBAR", False)
+sleep(2)
+print(f"{Gui.get_actionbar() = }")
+
+# setTimes(int fadeInTicks, int stayTicks, int fadeOutTicks)
+Gui.set_title_times(30, 20, 30)
+Gui.set_title("This is a Title")
+Gui.set_subtitle("This is a Subtitle")
+print(f"{Gui.get_title() = }")
+print(f"{Gui.get_subtitle() = }")
+sleep(1)
+
+Gui.reset_title_times()
+Gui.set_actionbar("TINTED ACTIONBAR", True)
+sleep(2)
+print(f"{Gui.get_actionbar() = }")
+
+Gui.set_title("Clear this Title")
+Gui.set_subtitle("Clear this Subtitle")
+sleep(0.5)
+Gui.clear_titles()
+print(f"{Gui.get_title() = }")
+print(f"{Gui.get_subtitle() = }")
+print(f"{Gui.get_actionbar() = }")
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Inventory Management" icon="box" href="/examples/inventory-management">
+    Learn how to manipulate inventory items
+  </Card>
+  <Card title="Event Handling" icon="bolt" href="/examples/event-handling">
+    Set up event listeners for game events
+  </Card>
+</CardGroup>

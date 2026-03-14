@@ -1,0 +1,288 @@
+---
+title: Trading
+description: Villager and merchant trading operations
+icon: handshake
+---
+
+The `Trading` class provides methods for interacting with villager and merchant trades.
+
+<Note>
+  All Trading methods require an active trading screen to be open. Open a trading GUI by right-clicking a villager or wandering trader.
+</Note>
+
+## get_offers
+
+Retrieves all merchant offers available in the current trading screen.
+
+**Returns:** `MerchantOffers` - The offers object, or None if no trading screen is open.
+
+**Source:** `minescript_plus.py:1325`
+
+```python
+import minescript_plus as ms
+
+# Get all available offers
+offers = ms.Trading.get_offers()
+if offers:
+    count = offers.size()
+    print(f"Available trades: {count}")
+```
+
+## get_offer
+
+Retrieves a specific merchant offer by index.
+
+<ParamField path="offer_index" type="int" required>
+  The index of the offer (0-based).
+</ParamField>
+
+**Returns:** `MerchantOffer` - The offer object, or None if not available.
+
+**Source:** `minescript_plus.py:1340`
+
+```python
+import minescript_plus as ms
+
+# Get the first trade offer
+offer = ms.Trading.get_offer(0)
+if offer:
+    print(f"First trade offer retrieved")
+```
+
+## get_costA
+
+Gets the first cost item (costA) for a merchant offer.
+
+<ParamField path="offer_index" type="int" required>
+  The offer index.
+</ParamField>
+
+<ParamField path="name_and_count" type="bool" default="False">
+  If True, returns (name, count) tuple. Otherwise returns ItemStack.
+</ParamField>
+
+**Returns:** `tuple[str, int] | ItemStack | None` - ItemStack or (name, count) tuple, or None if not available.
+
+**Source:** `minescript_plus.py:1356`
+
+```python
+import minescript_plus as ms
+
+# Get cost as tuple
+cost = ms.Trading.get_costA(0, name_and_count=True)
+if cost:
+    name, count = cost
+    print(f"Cost A: {count}x {name}")
+
+# Get cost as ItemStack
+item_stack = ms.Trading.get_costA(0)
+```
+
+## get_costB
+
+Gets the second cost item (costB) for a merchant offer.
+
+<ParamField path="offer_index" type="int" required>
+  The offer index.
+</ParamField>
+
+<ParamField path="name_and_count" type="bool" default="False">
+  If True, returns (name, count) tuple. Otherwise returns ItemStack.
+</ParamField>
+
+**Returns:** `tuple[str, int] | ItemStack | None` - ItemStack or (name, count) tuple, or None if not available.
+
+**Source:** `minescript_plus.py:1375`
+
+```python
+import minescript_plus as ms
+
+# Get second cost (if trade requires two items)
+cost = ms.Trading.get_costB(0, name_and_count=True)
+if cost:
+    name, count = cost
+    print(f"Cost B: {count}x {name}")
+```
+
+## get_result
+
+Gets the result item for a merchant offer.
+
+<ParamField path="offer_index" type="int" required>
+  The offer index.
+</ParamField>
+
+<ParamField path="name_and_count" type="bool" default="False">
+  If True, returns (name, count) tuple. Otherwise returns ItemStack.
+</ParamField>
+
+**Returns:** `tuple[str, int] | ItemStack | None` - ItemStack or (name, count) tuple, or None if not available.
+
+**Source:** `minescript_plus.py:1394`
+
+```python
+import minescript_plus as ms
+
+# Get what you'll receive from the trade
+result = ms.Trading.get_result(0, name_and_count=True)
+if result:
+    name, count = result
+    print(f"You'll receive: {count}x {name}")
+```
+
+## trade_offer
+
+Executes a trade for the specified merchant offer index.
+
+<ParamField path="offer_index" type="int" required>
+  The index of the offer to trade.
+</ParamField>
+
+**Returns:** `None` if no trading screen is open.
+
+**Source:** `minescript_plus.py:1413`
+
+<Warning>
+  Make sure you have the required items in your inventory before calling this method.
+</Warning>
+
+```python
+import minescript_plus as ms
+
+# Execute the first trade
+ms.Trading.trade_offer(0)
+print("Trade executed!")
+```
+
+## Complete Example: Trade Inspector
+
+```python
+import minescript_plus as ms
+import time
+
+def inspect_all_trades():
+    """Display all available trades from a merchant."""
+    
+    # Wait for trading screen to open
+    print("Open a trading GUI...")
+    time.sleep(2)
+    
+    offers = ms.Trading.get_offers()
+    if not offers:
+        print("No trading screen open!")
+        return
+    
+    count = offers.size()
+    print(f"\n=== Available Trades ({count}) ===")
+    
+    for i in range(count):
+        print(f"\nTrade #{i + 1}:")
+        
+        # Get costs
+        cost_a = ms.Trading.get_costA(i, name_and_count=True)
+        if cost_a:
+            name, qty = cost_a
+            print(f"  Cost A: {qty}x {name}")
+        
+        cost_b = ms.Trading.get_costB(i, name_and_count=True)
+        if cost_b:
+            name, qty = cost_b
+            print(f"  Cost B: {qty}x {name}")
+        
+        # Get result
+        result = ms.Trading.get_result(i, name_and_count=True)
+        if result:
+            name, qty = result
+            print(f"  Result: {qty}x {name}")
+        
+        # Check if trade is maxed out
+        offer = ms.Trading.get_offer(i)
+        if offer and offer.isOutOfStock():
+            print("  ⚠️ OUT OF STOCK")
+
+inspect_all_trades()
+```
+
+## Auto-Trader Example
+
+```python
+import minescript_plus as ms
+import time
+
+def auto_trade(offer_index: int, times: int = 1):
+    """Automatically execute a specific trade multiple times."""
+    
+    offers = ms.Trading.get_offers()
+    if not offers:
+        print("No trading screen open!")
+        return
+    
+    # Validate offer exists
+    offer = ms.Trading.get_offer(offer_index)
+    if not offer:
+        print(f"Trade #{offer_index} doesn't exist!")
+        return
+    
+    # Display what we're trading
+    cost_a = ms.Trading.get_costA(offer_index, name_and_count=True)
+    result = ms.Trading.get_result(offer_index, name_and_count=True)
+    
+    print(f"Trading {cost_a[1]}x {cost_a[0]} for {result[1]}x {result[0]}")
+    print(f"Executing {times} time(s)...")
+    
+    for i in range(times):
+        # Check if still in stock
+        if offer.isOutOfStock():
+            print(f"Trade out of stock after {i} trades!")
+            break
+        
+        ms.Trading.trade_offer(offer_index)
+        print(f"  Trade {i + 1}/{times} completed")
+        time.sleep(0.3)  # Small delay between trades
+    
+    print("Trading complete!")
+
+# Trade the first offer 10 times
+auto_trade(0, times=10)
+```
+
+## Find Best Emerald Trade
+
+```python
+import minescript_plus as ms
+
+def find_best_emerald_trade():
+    """Find the trade that gives the most emeralds."""
+    
+    offers = ms.Trading.get_offers()
+    if not offers:
+        print("No trading screen open!")
+        return None
+    
+    best_trade = None
+    best_count = 0
+    
+    for i in range(offers.size()):
+        result = ms.Trading.get_result(i, name_and_count=True)
+        
+        if result:
+            name, count = result
+            if "emerald" in name.lower() and count > best_count:
+                best_count = count
+                best_trade = i
+    
+    if best_trade is not None:
+        cost_a = ms.Trading.get_costA(best_trade, name_and_count=True)
+        print(f"Best emerald trade: #{best_trade + 1}")
+        print(f"  Give: {cost_a[1]}x {cost_a[0]}")
+        print(f"  Get: {best_count}x Emerald")
+        return best_trade
+    else:
+        print("No emerald trades found")
+        return None
+
+best = find_best_emerald_trade()
+if best is not None:
+    # Execute the best trade
+    ms.Trading.trade_offer(best)
+```

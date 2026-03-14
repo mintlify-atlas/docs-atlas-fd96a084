@@ -1,0 +1,297 @@
+---
+title: SNBT Parser
+description: Minecraft SNBT (Stringified Named Binary Tag) parsing and manipulation
+---
+
+A comprehensive parser for Minecraft's SNBT (Stringified Named Binary Tag) format that converts SNBT strings to Python objects and back.
+
+## Overview
+
+The SNBT Parser provides functionality to:
+
+- Parse SNBT strings into Python dictionaries and lists
+- Convert Python objects back to SNBT format
+- Navigate nested NBT data using dot notation
+- Handle Minecraft-specific data types (typed numbers, compound tags, lists)
+
+## Available Modules
+
+### snbt_parser.py
+
+Full-featured parser with read/write capabilities:
+- `SNBTParser` class with parsing and serialization
+- Convenience functions for common operations
+- Support for pretty-printing SNBT output
+
+### snbt_reader.py
+
+Lightweight read-only parser:
+- `SNBTParser` class focused on parsing
+- Simpler implementation for reading SNBT data
+- Convenience functions for data extraction
+
+## SNBTParser Class
+
+The main parser class that handles SNBT conversion.
+
+### Methods
+
+| Method | Description |
+|--------|-------------|
+| `parse(snbt_string)` | Parse SNBT string into Python object |
+| `to_snbt(obj, pretty=False)` | Convert Python object to SNBT string (snbt_parser.py only) |
+| `get(obj, path, default=None)` | Get value using dot notation |
+| `set(obj, path, value)` | Set value using dot notation (snbt_parser.py only) |
+
+## Convenience Functions
+
+### snbt_parser.py
+
+```python
+parse_snbt(snbt_string: str) -> Union[Dict, List, Any]
+to_snbt(obj: Any, pretty: bool = False) -> str
+get_nbt_value(obj: dict, path: str, default=None) -> Any
+set_nbt_value(obj: dict, path: str, value: Any) -> None
+```
+
+### snbt_reader.py
+
+```python
+parse_snbt(snbt_string: str) -> Union[Dict, List, Any]
+get_nbt_value(obj: dict, path: str, default=None) -> Any
+```
+
+## Supported Data Types
+
+### Primitive Types
+
+- **Boolean**: `true`, `false`
+- **Numbers**: `42`, `3.14`, `-5`
+- **Typed Numbers**: `3s` (short), `4.5f` (float), `1L` (long), `2.0d` (double), `8b` (byte)
+- **Strings**: `"quoted"`, `'single'`, `unquoted_identifier`
+
+### Compound Types
+
+- **Compound Tags**: `{key: value, nested: {inner: 123}}`
+- **List Tags**: `[1, 2, 3]`, `["a", "b", "c"]`
+- **Mixed Lists**: `[{id: "stone", Count: 64}, {id: "dirt", Count: 32}]`
+
+## Usage
+
+<Steps>
+
+### Parse SNBT String
+
+Convert an SNBT string to Python objects:
+
+```python
+from snbt_parser import parse_snbt
+
+snbt = '{CustomName: "Bob", Health: 20.0f, Pos: [100.5d, 64.0d, 200.0d]}'
+data = parse_snbt(snbt)
+
+print(data)
+# {'CustomName': 'Bob', 'Health': 20.0, 'Pos': [100.5, 64.0, 200.0]}
+```
+
+### Access Nested Values
+
+Use dot notation to navigate nested structures:
+
+```python
+from snbt_parser import parse_snbt, get_nbt_value
+
+entity_snbt = '''
+{
+    CustomName: '"Bob the Builder"',
+    Health: 20.0f,
+    Inventory: [
+        {Slot: 0b, Count: 64b, id: "minecraft:stone"},
+        {Slot: 1b, Count: 32b, id: "minecraft:dirt"}
+    ],
+    Attributes: {Speed: 0.7f, MaxHealth: 20.0f}
+}
+'''
+
+data = parse_snbt(entity_snbt)
+
+# Get values using dot notation
+name = get_nbt_value(data, 'CustomName')
+health = get_nbt_value(data, 'Health')
+speed = get_nbt_value(data, 'Attributes.Speed')
+first_item = get_nbt_value(data, 'Inventory.0.id')
+
+print(f"Name: {name}")           # Bob the Builder
+print(f"Health: {health}")       # 20.0
+print(f"Speed: {speed}")         # 0.7
+print(f"First item: {first_item}")  # minecraft:stone
+```
+
+### Modify NBT Data
+
+Change values in parsed SNBT data (snbt_parser.py only):
+
+```python
+from snbt_parser import parse_snbt, set_nbt_value, to_snbt
+
+snbt = '{Health: 20.0f, CustomName: "Bob"}'
+data = parse_snbt(snbt)
+
+# Modify values
+set_nbt_value(data, 'Health', 15.0)
+set_nbt_value(data, 'CustomName', '"Bob the Destroyer"')
+
+# Convert back to SNBT
+modified_snbt = to_snbt(data)
+print(modified_snbt)
+# {Health:15.0,CustomName:"Bob the Destroyer"}
+```
+
+### Pretty Print SNBT
+
+Format SNBT with indentation (snbt_parser.py only):
+
+```python
+from snbt_parser import to_snbt
+
+data = {
+    'CustomName': 'Bob',
+    'Health': 20.0,
+    'Inventory': [
+        {'Slot': 0, 'Count': 64, 'id': 'minecraft:stone'},
+        {'Slot': 1, 'Count': 32, 'id': 'minecraft:dirt'}
+    ]
+}
+
+formatted = to_snbt(data, pretty=True)
+print(formatted)
+```
+
+Output:
+```
+{
+  CustomName:"Bob",
+  Health:20.0,
+  Inventory:[
+    {
+      Slot:0,
+      Count:64,
+      id:"minecraft:stone"
+    },
+    {
+      Slot:1,
+      Count:32,
+      id:"minecraft:dirt"
+    }
+  ]
+}
+```
+
+### Use the Class Directly
+
+Create a parser instance for multiple operations:
+
+```python
+from snbt_parser import SNBTParser
+
+parser = SNBTParser()
+
+# Parse
+data = parser.parse('{Health: 20.0f}')
+
+# Get value
+health = parser.get(data, 'Health')
+
+# Set value
+parser.set(data, 'Health', 15.0)
+
+# Convert to SNBT
+snbt = parser.to_snbt(data, pretty=True)
+```
+
+</Steps>
+
+## Complete Example
+
+```python
+from snbt_parser import parse_snbt, get_nbt_value, set_nbt_value, to_snbt
+
+# Parse entity data
+entity_snbt = '''
+{
+    CustomName: '"Bob the Builder"',
+    Health: 20.0f,
+    Pos: [100.5d, 64.0d, 200.0d],
+    Motion: [0.0d, 0.0d, 0.0d],
+    Inventory: [
+        {Slot: 0b, Count: 64b, id: "minecraft:stone"},
+        {Slot: 1b, Count: 32b, id: "minecraft:dirt"}
+    ],
+    Tags: ["custom_mob", "builder"],
+    Attributes: {
+        Speed: 0.7f,
+        MaxHealth: 20.0f
+    }
+}
+'''
+
+data = parse_snbt(entity_snbt)
+
+# Read various values
+print(f"Name: {get_nbt_value(data, 'CustomName')}")
+print(f"Health: {get_nbt_value(data, 'Health')}")
+print(f"Position Y: {get_nbt_value(data, 'Pos.1')}")
+print(f"First tag: {get_nbt_value(data, 'Tags.0')}")
+print(f"Speed: {get_nbt_value(data, 'Attributes.Speed')}")
+print(f"First inventory slot: {get_nbt_value(data, 'Inventory.0.id')}")
+
+# Modify data
+set_nbt_value(data, 'Health', 15.0)
+set_nbt_value(data, 'CustomName', '"Bob the Destroyer"')
+set_nbt_value(data, 'Attributes.Speed', 1.0)
+
+# Export as pretty SNBT
+print("\nModified SNBT:")
+print(to_snbt(data, pretty=True))
+```
+
+## Typed Number Conversion
+
+The parser automatically converts Minecraft's typed numbers:
+
+| Suffix | Type | Python Type |
+|--------|------|-------------|
+| `b`, `B` | Byte | `int` |
+| `s`, `S` | Short | `int` |
+| `l`, `L` | Long | `int` |
+| `f`, `F` | Float | `float` |
+| `d`, `D` | Double | `float` |
+
+```python
+snbt = '{a: 5b, b: 10s, c: 100L, d: 3.14f, e: 2.718d}'
+data = parse_snbt(snbt)
+print(data)
+# {'a': 5, 'b': 10, 'c': 100, 'd': 3.14, 'e': 2.718}
+```
+
+## Dot Notation Paths
+
+The `get()` and `set()` methods support dot notation for nested access:
+
+- **Dictionary keys**: `"player.Health"`
+- **List indices**: `"Inventory.0.Count"`
+- **Deep nesting**: `"entity.Attributes.generic.maxHealth"`
+
+```python
+data = parse_snbt('{player: {inv: [{id: "stone"}]}}'
+item_id = get_nbt_value(data, 'player.inv.0.id')  # "stone"
+```
+
+## Source Reference
+
+- **snbt_parser.py**: Full parser (lines 1-413)
+- **snbt_reader.py**: Read-only parser (lines 1-294)
+- **SNBTParser class**: snbt_parser.py:12, snbt_reader.py:11
+- **parse() method**: snbt_parser.py:25, snbt_reader.py:23
+- **to_snbt() method**: snbt_parser.py:215
+- **Convenience functions**: snbt_parser.py:355-372, snbt_reader.py:256-263

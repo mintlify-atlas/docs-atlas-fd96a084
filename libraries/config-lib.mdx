@@ -1,0 +1,228 @@
+---
+title: Config Library
+description: JSON-backed configuration management with attribute-style access
+---
+
+A simple yet powerful JSON-backed configuration library that provides attribute-style access to nested configuration data with automatic persistence.
+
+## Overview
+
+The Config library (`config_lib.py`) provides two main classes:
+
+- **Config**: Top-level configuration object with automatic JSON persistence
+- **ConfigNode**: Wrapper for nested dictionary access with attribute-style syntax
+
+## Key Features
+
+- Attribute-style and dictionary-style access
+- Automatic saving with atomic file writes
+- Nested configuration support
+- Type safety with JSON-serializable values
+- Context manager support
+
+## Classes
+
+### Config
+
+The main configuration class that manages a JSON file.
+
+**Constructor**
+
+```python
+Config(path: str, autosave: bool = True)
+```
+
+**Parameters:**
+- `path` (str): Path to the JSON configuration file
+- `autosave` (bool): If True, automatically save after every change (default: True)
+
+**Methods:**
+
+| Method | Description |
+|--------|-------------|
+| `save()` | Atomically write configuration to disk |
+| `reload()` | Reload data from disk, replacing in-memory state |
+| `to_dict()` | Return a deep copy of the internal data as a plain dict |
+
+### ConfigNode
+
+Wrapper that provides attribute-style access to nested dictionaries.
+
+**Methods:**
+
+| Method | Description |
+|--------|-------------|
+| `to_dict()` | Return a plain dict view of this node |
+
+## Usage
+
+<Steps>
+
+### Initialize Config
+
+Create a Config instance with a file path:
+
+```python
+from config_lib import Config
+
+config = Config("settings.json", autosave=True)
+```
+
+If the file doesn't exist, it will be created automatically.
+
+### Set Configuration Values
+
+Use attribute-style or dictionary-style access:
+
+```python
+# Attribute-style
+config.database.host = "localhost"
+config.database.port = 3306
+config.database.user = "admin"
+
+# Dictionary-style
+config["api"]["key"] = "abc123"
+config["api"]["timeout"] = 30
+```
+
+### Read Configuration Values
+
+Access values using the same syntax:
+
+```python
+# Read values
+print(config.database.host)  # "localhost"
+print(config.database.port)  # 3306
+print(config.api.timeout)    # 30
+```
+
+### Nested Configuration
+
+Create deeply nested structures:
+
+```python
+config.server.database.primary.host = "db1.example.com"
+config.server.database.primary.port = 5432
+config.server.database.replica.host = "db2.example.com"
+config.server.database.replica.port = 5432
+```
+
+### Manual Save
+
+If `autosave=False`, save manually:
+
+```python
+config = Config("settings.json", autosave=False)
+config.setting = "value"
+config.save()  # Explicit save
+```
+
+### Context Manager
+
+Use as a context manager for automatic save on exit:
+
+```python
+with Config("settings.json", autosave=False) as config:
+    config.database.host = "localhost"
+    config.database.port = 3306
+    # Automatically saved on context exit
+```
+
+### Convert to Dictionary
+
+Get a plain dictionary representation:
+
+```python
+config_dict = config.to_dict()
+node_dict = config.database.to_dict()
+```
+
+</Steps>
+
+## Complete Example
+
+```python
+from config_lib import Config
+
+# Create or load configuration
+config = Config("app_settings.json", autosave=True)
+
+# Set application settings
+config.app.name = "MyApp"
+config.app.version = "1.0.0"
+
+# Database configuration
+config.database.host = "localhost"
+config.database.port = 3306
+config.database.credentials.username = "admin"
+config.database.credentials.password = "secret"
+
+# API settings
+config.api.endpoint = "https://api.example.com"
+config.api.timeout = 30
+config.api.retry_count = 3
+
+# Read configuration
+print(f"App: {config.app.name} v{config.app.version}")
+print(f"Database: {config.database.host}:{config.database.port}")
+print(f"API: {config.api.endpoint}")
+
+# Get dictionary representation
+settings_dict = config.to_dict()
+print(settings_dict)
+```
+
+## Error Handling
+
+**ConfigError**: Raised for configuration-related errors:
+
+- Invalid JSON in config file
+- Non-dictionary top-level JSON
+- Non-JSON-serializable values
+- File I/O errors
+
+```python
+from config_lib import Config, ConfigError
+
+try:
+    config = Config("settings.json")
+    config.value = some_object  # Must be JSON-serializable
+except ConfigError as e:
+    print(f"Configuration error: {e}")
+```
+
+## Implementation Details
+
+### Atomic Writes
+
+The `save()` method uses atomic file writes:
+
+1. Writes to a temporary file in the same directory
+2. Uses `os.fsync()` to ensure data is written to disk
+3. Uses `os.replace()` for atomic move
+
+This prevents corruption if the program crashes during save.
+
+### Lazy Node Creation
+
+ConfigNode instances are created lazily:
+
+```python
+config.section.subsection.value = 123
+# Creates nested structure automatically
+```
+
+### JSON Serialization
+
+Only JSON-serializable values are allowed:
+- Strings, numbers, booleans, None
+- Lists and dictionaries containing JSON-serializable values
+
+Custom objects must be converted to dictionaries before assignment.
+
+## Source Reference
+
+- **File**: `config_lib.py` (lines 1-288)
+- **Config class**: config_lib.py:159
+- **ConfigNode class**: config_lib.py:28
+- **save() method**: config_lib.py:205

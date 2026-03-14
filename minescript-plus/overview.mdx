@@ -1,0 +1,135 @@
+---
+title: "Minescript Plus Overview"
+description: "Feature-rich API extension for the Minescript mod providing inventory management, GUI control, events, and more"
+---
+
+## About Minescript Plus
+
+Minescript Plus is a user-friendly Python API that extends the [Minescript mod](https://github.com/maxuser0/minescript) with additional functionality. It provides high-level interfaces for interacting with Minecraft's inventory system, GUI elements, world data, player information, and more.
+
+<Note>
+  **Version**: 0.16.2-alpha  
+  **Author**: RazrCraft  
+  **License**: MIT
+</Note>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Inventory" icon="box" href="/minescript-plus/inventory">
+    Programmatic inventory and container manipulation
+  </Card>
+  <Card title="Screen & GUI" icon="window" href="/minescript-plus/gui">
+    Control titles, subtitles, and actionbars
+  </Card>
+  <Card title="Player Info" icon="user" href="/minescript-plus/player">
+    Access game mode, health, food level, XP, and more
+  </Card>
+  <Card title="World Data" icon="globe" href="/minescript-plus/world">
+    Read signs, find entities, check weather and time
+  </Card>
+  <Card title="Trading" icon="handshake" href="/minescript-plus/trading">
+    Automate villager trading
+  </Card>
+  <Card title="Events" icon="bolt" href="/minescript-plus/events">
+    Listen for GUI and screen events
+  </Card>
+  <Card title="HUD Rendering" icon="display" href="/minescript-plus/hud">
+    Render custom text and items on screen
+  </Card>
+  <Card title="Utilities" icon="wrench" href="/minescript-plus/util">
+    Clipboard, distance, light levels, sounds, and more
+  </Card>
+</CardGroup>
+
+## Architecture
+
+Minescript Plus is built on top of Minescript's Java interop layer, providing:
+
+- **High-level Python APIs** - Clean, Pythonic interfaces
+- **Direct Java access** - Some classes expose underlying Minecraft instances
+- **Type hints** - Full type annotations for IDE support
+- **Async support** - Event system uses asyncio
+
+### Direct Minecraft Class Access
+
+Some classes (`Client`, `Player`, `World`) expose the original Minecraft class instance when initialized:
+
+```python
+from minescript_plus import Player
+
+p = Player()
+print(p.getArmorValue())  # Call any public method from mc.player
+```
+
+## Module Structure
+
+The API is organized into logical modules:
+
+| Module | Purpose |
+|--------|----------|
+| `Inventory` | Container and item manipulation |
+| `Screen` | Screen detection and control |
+| `Gui` | Title, subtitle, actionbar management |
+| `Key` | Key press simulation |
+| `Client` | Client-level operations |
+| `Player` | Player state and information |
+| `Server` | Server info and tablist |
+| `World` | World data and block interaction |
+| `Trading` | Villager trading automation |
+| `Hud` | HUD text and item rendering (Fabric API required) |
+| `Util` | Utility functions |
+| `Event` | Event system for GUI changes |
+| `Keybind` | Custom keybind registration |
+
+## Usage Pattern
+
+Typical import and usage:
+
+```python
+from minescript_plus import Inventory, Gui, Player, Event
+
+# Use static methods directly
+Gui.set_title("Hello!")
+pos = Player.get_player_block_position()
+
+# Open inventory and click slot
+Inventory.open_targeted_chest()
+Inventory.click_slot(0)
+
+# Register event listener
+async def on_title(text: str):
+    print(f"Title: {text}")
+
+await Event.register("on_title", on_title)
+```
+
+## Requirements
+
+<Warning>
+  Minescript Plus requires specific versions and dependencies:
+</Warning>
+
+- **Minecraft**: 1.21.5 - 1.21.11
+- **Minescript**: 5.0b6 or newer
+- **Python**: 3.10 or higher
+- **Mappings**: Required for Fabric (run `\install_mappings` in chat)
+- **Fabric API mod**: Optional, required for `Hud` class only
+- **lib_nbt v1**: Optional, required for `Inventory.find_item()` only
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Installation" icon="download" href="/installation">
+    Set up Minescript Plus
+  </Card>
+  <Card title="Quickstart" icon="rocket" href="/quickstart">
+    Write your first script
+  </Card>
+  <Card title="API Reference" icon="book" href="/minescript-plus/inventory">
+    Explore all modules
+  </Card>
+  <Card title="Examples" icon="lightbulb" href="/examples/basic-usage">
+    Learn from examples
+  </Card>
+</CardGroup>

@@ -1,0 +1,254 @@
+---
+title: 'Discord Webhook'
+description: 'Send messages to Discord channels from Python scripts'
+---
+
+## Overview
+
+The Discord Webhook script provides a simple way to send messages from your Minescript environment to Discord channels using webhooks. This enables you to receive notifications, alerts, or logs directly in Discord.
+
+## Features
+
+- **Simple command-line interface**: Send messages with a single command
+- **Customizable bot identity**: Configure username and avatar
+- **Error handling**: Includes rate limiting and error detection
+- **Multi-word messages**: Supports messages with spaces
+
+## Prerequisites
+
+<Note>
+You'll need to install the `requests` library if it's not already available:
+
+```bash
+pip install requests
+```
+</Note>
+
+## Configuration
+
+### Setting Up a Discord Webhook
+
+<Steps>
+  <Step title="Create a Webhook in Discord">
+    1. Open your Discord server settings
+    2. Navigate to **Integrations** → **Webhooks**
+    3. Click **New Webhook**
+    4. Configure the webhook:
+       - Set the channel where messages will appear
+       - Optionally customize the name and avatar
+    5. Click **Copy Webhook URL**
+  </Step>
+
+  <Step title="Configure the Script">
+    Open `discord_webhook.py` and replace the placeholder URL with your webhook URL:
+    
+    ```python
+    # Replace with your actual Discord webhook URL
+    webhook_url = "YOUR_DISCORD_WEBHOOK_URL"
+    ```
+    
+    Example:
+    ```python
+    webhook_url = "https://discord.com/api/webhooks/1234567890/abcdefghijklmnop"
+    ```
+  </Step>
+
+  <Step title="Customize Bot Identity (Optional)">
+    You can customize how the bot appears in Discord:
+    
+    ```python
+    data = {
+        "content": f"{content}",
+        "username": "Python Bot",  # Change this name
+        "avatar_url": "https://img.icons8.com/color/64/python.png"  # Change avatar URL
+    }
+    ```
+    
+    <Note>
+    The `username` and `avatar_url` are optional. Remove them to use the webhook's default settings.
+    </Note>
+  </Step>
+</Steps>
+
+## Usage
+
+### Basic Usage
+
+Send a message to Discord from the command line:
+
+```bash
+python discord_webhook.py "Hello from Minescript!"
+```
+
+### Multi-Word Messages
+
+The script automatically concatenates all arguments into a single message:
+
+```bash
+python discord_webhook.py Player found diamonds at coordinates 123 64 -456
+```
+
+This sends: `"Player found diamonds at coordinates 123 64 -456"`
+
+### Integration with Other Scripts
+
+You can call the webhook script from other Python scripts:
+
+```python
+import subprocess
+
+def send_discord_message(message):
+    subprocess.run(["python", "discord_webhook.py", message])
+
+# Example usage
+send_discord_message("Scanner detected an end portal frame!")
+```
+
+## Response Codes
+
+The script handles various Discord API responses:
+
+| Status Code | Meaning | Script Response |
+|------------|---------|------------------|
+| **204** | Success | "Message sent successfully!" |
+| **429** | Rate limited | "Rate limited by Discord. Please wait before sending again." |
+| **Other** | Error | Displays the status code and error details |
+
+<Note>
+Discord webhooks have rate limits. Avoid sending messages too frequently to prevent being temporarily blocked.
+</Note>
+
+## Configuration Options
+
+Here's the complete message payload structure:
+
+```python
+data = {
+    "content": f"{content}",        # The message text (required)
+    "username": "Python Bot",       # Custom sender name (optional)
+    "avatar_url": "<URL>"           # Custom avatar image (optional)
+}
+```
+
+### Advanced Options
+
+You can extend the `data` dictionary with additional Discord webhook features:
+
+```python
+data = {
+    "content": "Message text",
+    "username": "Custom Bot",
+    "avatar_url": "https://example.com/avatar.png",
+    "tts": False,                   # Text-to-speech
+    "embeds": [...]                 # Rich embeds (see Discord docs)
+}
+```
+
+Refer to the [Discord Webhook Documentation](https://discord.com/developers/docs/resources/webhook) for all available options.
+
+## Error Handling
+
+### Missing Content Argument
+
+If you run the script without a message:
+
+```bash
+python discord_webhook.py
+```
+
+You'll receive an error:
+
+```
+Error: Content argument is required and cannot be empty.
+Usage: discord_webhook <content>
+```
+
+### Network Errors
+
+The script includes a 10-second timeout to prevent hanging:
+
+```python
+response = requests.post(webhook_url, json=data, timeout=10)
+```
+
+## Common Use Cases
+
+### Server Monitoring
+
+Send alerts when specific events occur:
+
+```python
+if player_health < 3:
+    subprocess.run(["python", "discord_webhook.py", "⚠️ Low health warning!"])
+```
+
+### Automation Notifications
+
+```python
+subprocess.run(["python", "discord_webhook.py", "Farm automation cycle complete"])
+```
+
+### Scanner Integration
+
+Combine with the scanner script to get Discord notifications:
+
+```python
+if rare_block_found:
+    subprocess.run([
+        "python", 
+        "discord_webhook.py", 
+        f"Found {block_type} at {coordinates}"
+    ])
+```
+
+## Troubleshooting
+
+### Messages not appearing in Discord
+
+<Steps>
+  <Step title="Verify webhook URL">
+    Ensure the `webhook_url` is correctly copied from Discord with no extra spaces or characters.
+  </Step>
+
+  <Step title="Check channel permissions">
+    Verify the webhook has permission to post in the target channel.
+  </Step>
+
+  <Step title="Test the webhook">
+    Use curl to test the webhook directly:
+    
+    ```bash
+    curl -X POST -H "Content-Type: application/json" \
+      -d '{"content":"Test message"}' \
+      YOUR_WEBHOOK_URL
+    ```
+  </Step>
+</Steps>
+
+### Rate limiting errors
+
+If you see "Rate limited by Discord":
+
+- Reduce the frequency of messages
+- Implement a delay between messages
+- Consider batching multiple notifications into a single message
+
+## Security Best Practices
+
+<Note>
+**Important**: Never commit your webhook URL to public repositories. Consider these approaches:
+
+1. **Environment variables**: Store the URL in an environment variable
+   ```python
+   import os
+   webhook_url = os.getenv("DISCORD_WEBHOOK_URL")
+   ```
+
+2. **Config file**: Keep the URL in a separate config file that's gitignored
+   ```python
+   from config import WEBHOOK_URL
+   webhook_url = WEBHOOK_URL
+   ```
+
+3. **Rotate webhooks**: If a webhook URL is exposed, delete it in Discord and create a new one
+</Note>

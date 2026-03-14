@@ -1,0 +1,297 @@
+---
+title: GLFW Key Codes
+description: Complete reference for GLFW keyboard key codes
+---
+
+A comprehensive enumeration of GLFW keyboard key codes with their numeric values, compatible with GLFW applications.
+
+## Overview
+
+The `glfw_keycodes.py` module provides:
+
+- **GLFWKey enum**: IntEnum with all standard GLFW key codes
+- **get_glfw_keycode()**: Function to look up key codes by name
+- Full compatibility with official GLFW C/C++ key constants
+
+## GLFWKey Enum
+
+The `GLFWKey` enum inherits from `IntEnum`, so values can be used directly as integers in comparisons and arithmetic operations.
+
+### Key Categories
+
+<Accordion title="Printable Keys">
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| `SPACE` | 32 | Space bar |
+| `APOSTROPHE` | 39 | `'` |
+| `COMMA` | 44 | `,` |
+| `MINUS` | 45 | `-` |
+| `PERIOD` | 46 | `.` |
+| `SLASH` | 47 | `/` |
+| `SEMICOLON` | 59 | `;` |
+| `EQUAL` | 61 | `=` |
+| `LEFT_BRACKET` | 91 | `[` |
+| `BACKSLASH` | 92 | `\` |
+| `RIGHT_BRACKET` | 93 | `]` |
+| `GRAVE_ACCENT` | 96 | `` ` `` |
+
+</Accordion>
+
+<Accordion title="Number Keys">
+
+| Key | Value |
+|-----|-------|
+| `KEY_0` | 48 |
+| `KEY_1` | 49 |
+| `KEY_2` | 50 |
+| `KEY_3` | 51 |
+| `KEY_4` | 52 |
+| `KEY_5` | 53 |
+| `KEY_6` | 54 |
+| `KEY_7` | 55 |
+| `KEY_8` | 56 |
+| `KEY_9` | 57 |
+
+</Accordion>
+
+<Accordion title="Letter Keys">
+
+| Key | Value | Key | Value | Key | Value |
+|-----|-------|-----|-------|-----|-------|
+| `A` | 65 | `J` | 74 | `S` | 83 |
+| `B` | 66 | `K` | 75 | `T` | 84 |
+| `C` | 67 | `L` | 76 | `U` | 85 |
+| `D` | 68 | `M` | 77 | `V` | 86 |
+| `E` | 69 | `N` | 78 | `W` | 87 |
+| `F` | 70 | `O` | 79 | `X` | 88 |
+| `G` | 71 | `P` | 80 | `Y` | 89 |
+| `H` | 72 | `Q` | 81 | `Z` | 90 |
+| `I` | 73 | `R` | 82 | | |
+
+</Accordion>
+
+<Accordion title="Function Keys">
+
+| Key | Value | Key | Value |
+|-----|-------|-----|-------|
+| `ESCAPE` | 256 | `F1` | 290 |
+| `ENTER` | 257 | `F2` | 291 |
+| `TAB` | 258 | `F3` | 292 |
+| `BACKSPACE` | 259 | `F4` | 293 |
+| `INSERT` | 260 | `F5` | 294 |
+| `DELETE` | 261 | `F6` | 295 |
+| `RIGHT` | 262 | `F7` | 296 |
+| `LEFT` | 263 | `F8` | 297 |
+| `DOWN` | 264 | `F9` | 298 |
+| `UP` | 265 | `F10` | 299 |
+| `PAGE_UP` | 266 | `F11` | 300 |
+| `PAGE_DOWN` | 267 | `F12` | 301 |
+| `HOME` | 268 | `F13-F25` | 302-314 |
+| `END` | 269 | | |
+| `CAPS_LOCK` | 280 | | |
+| `SCROLL_LOCK` | 281 | | |
+| `NUM_LOCK` | 282 | | |
+| `PRINT_SCREEN` | 283 | | |
+| `PAUSE` | 284 | | |
+
+</Accordion>
+
+<Accordion title="Keypad Keys">
+
+| Key | Value | Key | Value |
+|-----|-------|-----|-------|
+| `KP_0` | 320 | `KP_DECIMAL` | 330 |
+| `KP_1` | 321 | `KP_DIVIDE` | 331 |
+| `KP_2` | 322 | `KP_MULTIPLY` | 332 |
+| `KP_3` | 323 | `KP_SUBTRACT` | 333 |
+| `KP_4` | 324 | `KP_ADD` | 334 |
+| `KP_5` | 325 | `KP_ENTER` | 335 |
+| `KP_6` | 326 | `KP_EQUAL` | 336 |
+| `KP_7` | 327 | | |
+| `KP_8` | 328 | | |
+| `KP_9` | 329 | | |
+
+</Accordion>
+
+<Accordion title="Modifier Keys">
+
+| Key | Value |
+|-----|-------|
+| `LEFT_SHIFT` | 340 |
+| `LEFT_CONTROL` | 341 |
+| `LEFT_ALT` | 342 |
+| `LEFT_SUPER` | 343 |
+| `RIGHT_SHIFT` | 344 |
+| `RIGHT_CONTROL` | 345 |
+| `RIGHT_ALT` | 346 |
+| `RIGHT_SUPER` | 347 |
+| `MENU` | 348 |
+
+</Accordion>
+
+<Accordion title="Special Keys">
+
+| Key | Value | Description |
+|-----|-------|-------------|
+| `UNKNOWN` | -1 | Unknown/unrecognized key |
+| `WORLD_1` | 161 | Non-US key 1 |
+| `WORLD_2` | 162 | Non-US key 2 |
+
+</Accordion>
+
+## Functions
+
+### get_glfw_keycode()
+
+Look up a GLFW key code by name (case-insensitive).
+
+```python
+get_glfw_keycode(key_name: str) -> int
+```
+
+**Parameters:**
+- `key_name` (str): Name of the key (case-insensitive)
+
+**Returns:**
+- `int`: The key code value, or `GLFWKey.UNKNOWN` (-1) if not found
+
+## Usage
+
+<Steps>
+
+### Import the Module
+
+```python
+from glfw_keycodes import GLFWKey, get_glfw_keycode
+```
+
+### Use Enum Values
+
+Access key codes directly from the enum:
+
+```python
+space_key = GLFWKey.SPACE         # 32
+escape_key = GLFWKey.ESCAPE       # 256
+a_key = GLFWKey.A                 # 65
+f1_key = GLFWKey.F1               # 290
+enter_key = GLFWKey.ENTER         # 257
+```
+
+### Use the Lookup Function
+
+Get key codes by name (case-insensitive):
+
+```python
+w_key = get_glfw_keycode('W')           # 87
+w_key = get_glfw_keycode('w')           # 87 (case-insensitive)
+enter_key = get_glfw_keycode('enter')   # 257
+space_key = get_glfw_keycode('SPACE')   # 32
+
+# Unknown keys return -1
+unknown = get_glfw_keycode('invalid')   # -1
+```
+
+### Check Key Membership
+
+Verify if a key exists in the enum:
+
+```python
+if GLFWKey.LEFT_SHIFT in GLFWKey:
+    print(f"Left Shift: {GLFWKey.LEFT_SHIFT}")  # 340
+```
+
+### Use in Comparisons
+
+Since `GLFWKey` is an `IntEnum`, values work as integers:
+
+```python
+key_code = 65
+
+if key_code == GLFWKey.A:
+    print("A key pressed")
+
+# Arithmetic operations
+if key_code >= GLFWKey.A and key_code <= GLFWKey.Z:
+    print("Letter key pressed")
+```
+
+### Iterate Over Keys
+
+Loop through all available keys:
+
+```python
+for key in GLFWKey:
+    print(f"{key.name}: {key.value}")
+```
+
+</Steps>
+
+## Complete Example
+
+```python
+from glfw_keycodes import GLFWKey, get_glfw_keycode
+
+# Direct enum access
+print(f"SPACE key: {GLFWKey.SPACE}")         # 32
+print(f"ESC key: {GLFWKey.ESCAPE}")          # 256
+print(f"A key: {GLFWKey.A}")                 # 65
+print(f"F1 key: {GLFWKey.F1}")               # 290
+
+# Function-based lookup
+print(f"W key: {get_glfw_keycode('W')}")     # 87
+print(f"Enter: {get_glfw_keycode('enter')}") # 257
+
+# Check key membership
+if GLFWKey.LEFT_SHIFT in GLFWKey:
+    print(f"Left Shift: {GLFWKey.LEFT_SHIFT}")  # 340
+
+# Use in key handler function
+def handle_key_press(key_code):
+    if key_code == GLFWKey.ESCAPE:
+        print("Escape pressed - exiting")
+    elif key_code == GLFWKey.SPACE:
+        print("Space pressed - jumping")
+    elif key_code >= GLFWKey.A and key_code <= GLFWKey.Z:
+        letter = chr(key_code)
+        print(f"Letter pressed: {letter}")
+    elif key_code >= GLFWKey.F1 and key_code <= GLFWKey.F12:
+        fn_num = key_code - GLFWKey.F1 + 1
+        print(f"F{fn_num} pressed")
+
+# Test the handler
+handle_key_press(GLFWKey.SPACE)    # "Space pressed - jumping"
+handle_key_press(GLFWKey.A)        # "Letter pressed: A"
+handle_key_press(GLFWKey.F5)       # "F5 pressed"
+```
+
+## Integration with GLFW
+
+Use with the GLFW library for keyboard input:
+
+```python
+import glfw
+from glfw_keycodes import GLFWKey
+
+def key_callback(window, key, scancode, action, mods):
+    if action == glfw.PRESS:
+        if key == GLFWKey.ESCAPE:
+            glfw.set_window_should_close(window, True)
+        elif key == GLFWKey.SPACE:
+            print("Jump!")
+        elif key == GLFWKey.W:
+            print("Move forward")
+        elif key == GLFWKey.S:
+            print("Move backward")
+
+# Set up GLFW window and callback
+glfw.init()
+window = glfw.create_window(640, 480, "Game", None, None)
+glfw.set_key_callback(window, key_callback)
+```
+
+## Source Reference
+
+- **File**: `glfw_keycodes.py` (lines 1-193)
+- **GLFWKey enum**: glfw_keycodes.py:22
+- **get_glfw_keycode()**: glfw_keycodes.py:170

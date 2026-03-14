@@ -1,0 +1,408 @@
+---
+title: "Event Handling"
+description: "Learn how to create event listeners and respond to game events in real-time"
+---
+
+## Introduction
+
+Minescript Plus provides a powerful event system that lets you react to game events like title changes, actionbar updates, and screen openings. This tutorial will show you how to set up event listeners and handle events effectively.
+
+## Available Events
+
+Minescript Plus supports the following built-in events:
+
+- `on_title` - Triggered when the title changes
+- `on_subtitle` - Triggered when the subtitle changes
+- `on_actionbar` - Triggered when the actionbar text changes
+- `on_open_screen` - Triggered when a screen opens
+
+## Two Ways to Register Events
+
+There are two methods for registering event handlers:
+
+1. **Using `Event.register()`** - Manual registration
+2. **Using `@Event.event` decorator** - Decorator-based registration
+
+## Using Event.register()
+
+<Steps>
+  <Step title="Basic event registration">
+    Register an event listener using the `Event.register()` method:
+
+    ```python actionbar_event.py
+    import asyncio
+    from minescript import tick_loop
+    from minescript_plus import Event
+
+    loop: bool = True
+
+    def on_actionbar(text: str):
+        global loop
+        print(f"Actionbar changed! current value: {text}")
+        loop = False
+
+    async def main():
+        listener = await Event.register("on_actionbar", on_actionbar)
+        print("Actionbar event test")
+        print("You can use this command to test it: /title @s actionbar \"Test!\"")
+        print("Waiting for actionbar...")
+
+        with tick_loop:
+            while loop:
+                await asyncio.sleep(0.05)
+
+        listener.unregister()
+
+    if __name__ == "__main__":
+        asyncio.run(main())
+    ```
+
+    <Tip>
+      Call `listener.unregister()` to stop listening when you're done.
+    </Tip>
+  </Step>
+
+  <Step title="Test the event">
+    Run the script and then execute this command in Minecraft to trigger the event:
+
+    ```
+    /title @s actionbar "Test!"
+    ```
+
+    You should see the message "Actionbar changed! current value: Test!" in the console.
+  </Step>
+
+  <Step title="Customize check interval">
+    Control how frequently the event is checked:
+
+    ```python
+    # Check every 100ms instead of default 50ms
+    listener = await Event.register(
+        "on_actionbar",
+        on_actionbar,
+        check_interval=0.1
+    )
+    ```
+  </Step>
+
+  <Step title="One-time events">
+    Use the `once` parameter to automatically unregister after the first trigger:
+
+    ```python
+    # This will only trigger once
+    listener = await Event.register(
+        "on_actionbar",
+        on_actionbar,
+        once=True
+    )
+    ```
+  </Step>
+</Steps>
+
+## Using @Event.event Decorator
+
+<Steps>
+  <Step title="Decorator-based registration">
+    Use the `@Event.event` decorator for cleaner code:
+
+    ```python actionbar_event2.py
+    import asyncio
+    from minescript import tick_loop
+    from minescript_plus import Event
+
+    loop: bool = True
+
+    @Event.event
+    def on_actionbar(text: str):
+        global loop
+        print(f"Actionbar changed! current value: {text}")
+        loop = False
+
+    async def main():
+        await Event.activate_all()
+        print("Actionbar event test")
+        print("You can use this command to test it: /title @s actionbar \"Test!\"")
+        print("Waiting for actionbar...")
+        
+        with tick_loop:
+            while loop:
+                await asyncio.sleep(0.05)
+
+    if __name__ == "__main__":
+        asyncio.run(main())
+    ```
+
+    <Info>
+      When using decorators, you must call `await Event.activate_all()` to start all decorated event handlers.
+    </Info>
+  </Step>
+
+  <Step title="Multiple event handlers">
+    Register multiple events with decorators:
+
+    ```python
+    from minescript_plus import Event
+
+    @Event.event
+    def on_title(text: str):
+        print(f"Title changed: {text}")
+
+    @Event.event
+    def on_subtitle(text: str):
+        print(f"Subtitle changed: {text}")
+
+    @Event.event
+    def on_actionbar(text: str):
+        print(f"Actionbar changed: {text}")
+
+    async def main():
+        # Activate all decorated events
+        await Event.activate_all()
+        # ... rest of your code
+    ```
+  </Step>
+</Steps>
+
+## Event Examples
+
+<Steps>
+  <Step title="Title event">
+    React to title changes:
+
+    ```python
+    import asyncio
+    from minescript import tick_loop
+    from minescript_plus import Event
+
+    running = True
+
+    @Event.event
+    def on_title(text: str):
+        global running
+        print(f"Title displayed: {text}")
+        if "Victory" in text:
+            print("You won!")
+            running = False
+
+    async def main():
+        await Event.activate_all()
+        print("Watching for titles...")
+        
+        with tick_loop:
+            while running:
+                await asyncio.sleep(0.05)
+
+    if __name__ == "__main__":
+        asyncio.run(main())
+    ```
+
+    Test with: `/title @s title "Victory"`
+  </Step>
+
+  <Step title="Screen open event">
+    Detect when screens are opened:
+
+    ```python
+    import asyncio
+    from minescript import tick_loop
+    from minescript_plus import Event
+
+    @Event.event
+    def on_open_screen(screen_name: str):
+        print(f"Screen opened: {screen_name}")
+        
+        if screen_name == "Chest":
+            print("A chest was opened!")
+        elif screen_name == "Furnace":
+            print("A furnace was opened!")
+
+    async def main():
+        await Event.activate_all()
+        print("Monitoring screen opens...")
+        
+        with tick_loop:
+            for _ in range(1000):  # Run for ~50 seconds
+                await asyncio.sleep(0.05)
+
+    if __name__ == "__main__":
+        asyncio.run(main())
+    ```
+  </Step>
+
+  <Step title="Subtitle event">
+    Monitor subtitle changes:
+
+    ```python
+    import asyncio
+    from minescript import tick_loop
+    from minescript_plus import Event
+
+    @Event.event
+    def on_subtitle(text: str):
+        print(f"Subtitle: {text}")
+        # React to specific subtitles
+        if "Boss" in text:
+            print("WARNING: Boss nearby!")
+
+    async def main():
+        await Event.activate_all()
+        print("Watching subtitles...")
+        
+        with tick_loop:
+            while True:
+                await asyncio.sleep(0.05)
+
+    if __name__ == "__main__":
+        asyncio.run(main())
+    ```
+
+    Test with: `/title @s subtitle "Boss Approaching"`
+  </Step>
+</Steps>
+
+## Complete Example: Auto-Responder
+
+Here's a practical example that responds to different game events:
+
+```python auto_responder.py
+import asyncio
+from minescript import tick_loop
+from minescript_plus import Event, Gui
+
+running = True
+
+@Event.event
+def on_actionbar(text: str):
+    print(f"Actionbar: {text}")
+    
+    # Respond to low health warning
+    if "Low Health" in text:
+        Gui.set_title("Danger!")
+        Gui.set_subtitle("Find shelter")
+
+@Event.event  
+def on_title(text: str):
+    global running
+    print(f"Title: {text}")
+    
+    # Stop script on specific title
+    if text == "Game Over":
+        print("Detected game over, stopping...")
+        running = False
+
+@Event.event
+def on_open_screen(screen_name: str):
+    print(f"Opened: {screen_name}")
+    
+    # Auto-close certain screens
+    if screen_name in ["Hopper", "Dropper"]:
+        print(f"Auto-closing {screen_name}")
+        # You could add Screen.close_screen() here if needed
+
+async def main():
+    await Event.activate_all()
+    print("Auto-responder started!")
+    print("Monitoring all events...")
+    
+    with tick_loop:
+        while running:
+            await asyncio.sleep(0.05)
+    
+    print("Auto-responder stopped")
+
+if __name__ == "__main__":
+    asyncio.run(main())
+```
+
+## Best Practices
+
+<AccordionGroup>
+  <Accordion title="Always use tick_loop for event loops">
+    When running async event listeners, always use `with tick_loop:` to ensure your script runs on the correct thread:
+
+    ```python
+    with tick_loop:
+        while condition:
+            await asyncio.sleep(0.05)
+    ```
+  </Accordion>
+
+  <Accordion title="Clean up listeners">
+    When using `Event.register()`, always unregister when done:
+
+    ```python
+    listener = await Event.register("on_actionbar", handler)
+    try:
+        # Your code
+        pass
+    finally:
+        listener.unregister()
+    ```
+  </Accordion>
+
+  <Accordion title="Adjust check intervals for performance">
+    Events check on intervals. Adjust based on your needs:
+    - Fast response needed: `check_interval=0.01` (10ms)
+    - Normal use: `check_interval=0.05` (50ms, default)
+    - Low priority: `check_interval=0.2` (200ms)
+
+    ```python
+    await Event.register(
+        "on_actionbar",
+        handler,
+        check_interval=0.1  # Check every 100ms
+    )
+    ```
+  </Accordion>
+
+  <Accordion title="Use meaningful callback names">
+    Name your event handlers to match the event name:
+
+    ```python
+    @Event.event
+    def on_actionbar(text: str):  # ✓ Clear what event this handles
+        pass
+
+    @Event.event  
+    def my_handler(text: str):  # ✗ Unclear which event
+        pass
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Event not triggering">
+    If your event isn't firing:
+    1. Make sure you called `await Event.activate_all()` (for decorators)
+    2. Check that you're running inside a `with tick_loop:` context
+    3. Verify the event name is correct (case-sensitive)
+    4. Try decreasing the `check_interval`
+  </Accordion>
+
+  <Accordion title="Events triggering multiple times">
+    Some events may trigger repeatedly:
+    - Use `once=True` if you only want one trigger
+    - Add debouncing logic in your handler
+    - Unregister the listener after first trigger
+  </Accordion>
+
+  <Accordion title="Script not exiting">
+    If your script hangs:
+    - Make sure your event loop has an exit condition
+    - Call `listener.unregister()` before exiting
+    - Use a timeout or iteration limit
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Inventory Management" icon="box" href="/examples/inventory-management">
+    Combine events with inventory operations
+  </Card>
+  <Card title="Event API Reference" icon="bolt" href="/minescript-plus/events">
+    Full Event API documentation
+  </Card>
+</CardGroup>

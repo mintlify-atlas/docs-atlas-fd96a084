@@ -1,0 +1,389 @@
+---
+title: Keybind
+description: Custom keybind registration and management
+icon: keyboard
+---
+
+The `Keybind` class provides a system for registering custom keybinds that execute callback functions when pressed.
+
+<Note>
+  The Keybind system runs in a background thread and uses GLFW key codes for key identification.
+</Note>
+
+## Creating a Keybind Manager
+
+First, create an instance of the Keybind class:
+
+```python
+import minescript_plus as ms
+
+keybind_manager = ms.Keybind()
+```
+
+## set_keybind
+
+Registers a new keybind with a callback function.
+
+<ParamField path="key" type="int" required>
+  The GLFW key code for the key to bind.
+</ParamField>
+
+<ParamField path="callback" type="Callable" required>
+  The function to call when the key is released (not when pressed).
+</ParamField>
+
+<ParamField path="name" type="str" default="''">
+  A human-readable name for the keybind.
+</ParamField>
+
+<ParamField path="category" type="str" default="''">
+  A category to group related keybinds.
+</ParamField>
+
+<ParamField path="description" type="str" default="''">
+  A description of what the keybind does.
+</ParamField>
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:273`
+
+```python
+import minescript_plus as ms
+
+keybind_manager = ms.Keybind()
+
+def say_hello():
+    print("Hello from keybind!")
+
+# Register F5 (GLFW code 294)
+keybind_manager.set_keybind(
+    key=294,
+    callback=say_hello,
+    name="Say Hello",
+    category="Custom",
+    description="Prints hello message"
+)
+```
+
+<Note>
+  Callbacks are triggered when the key is **released** (action == 0), not when pressed.
+</Note>
+
+## modify_keybind
+
+Modifies an existing keybind.
+
+<ParamField path="key" type="int" required>
+  The GLFW key code of the keybind to modify.
+</ParamField>
+
+<ParamField path="callback" type="Callable" required>
+  The new callback function.
+</ParamField>
+
+<ParamField path="name" type="str" default="''">
+  Updated name.
+</ParamField>
+
+<ParamField path="category" type="str" default="''">
+  Updated category.
+</ParamField>
+
+<ParamField path="description" type="str" default="''">
+  Updated description.
+</ParamField>
+
+**Returns:** `None`
+
+**Raises:** `ValueError` if no keybind exists for the specified key.
+
+**Source:** `minescript_plus.py:283`
+
+```python
+import minescript_plus as ms
+
+keybind_manager = ms.Keybind()
+
+def new_callback():
+    print("Updated callback!")
+
+# Modify existing keybind
+keybind_manager.modify_keybind(
+    key=294,
+    callback=new_callback,
+    name="Updated Hello"
+)
+```
+
+## remove_keybind
+
+Removes an existing keybind.
+
+<ParamField path="key" type="int" required>
+  The GLFW key code of the keybind to remove.
+</ParamField>
+
+**Returns:** `None`
+
+**Raises:** `ValueError` if no keybind exists for the specified key.
+
+**Source:** `minescript_plus.py:296`
+
+```python
+import minescript_plus as ms
+
+keybind_manager = ms.Keybind()
+
+# Remove keybind
+keybind_manager.remove_keybind(294)
+```
+
+## Common GLFW Key Codes
+
+| Key | GLFW Code |
+|-----|----------|
+| F1 | 290 |
+| F2 | 291 |
+| F3 | 292 |
+| F4 | 293 |
+| F5 | 294 |
+| F6 | 295 |
+| F7 | 296 |
+| F8 | 297 |
+| F9 | 298 |
+| F10 | 299 |
+| F11 | 300 |
+| F12 | 301 |
+| 0-9 | 48-57 |
+| A-Z | 65-90 |
+| Space | 32 |
+| Enter | 257 |
+| Tab | 258 |
+| Backspace | 259 |
+| Insert | 260 |
+| Delete | 261 |
+| Right Arrow | 262 |
+| Left Arrow | 263 |
+| Down Arrow | 264 |
+| Up Arrow | 265 |
+
+<Note>
+  For a complete list of GLFW key codes, see: [GLFW Key Documentation](https://www.glfw.org/docs/latest/group__keys.html)
+</Note>
+
+## Complete Examples
+
+### Basic Keybind Setup
+
+```python
+import minescript_plus as ms
+import minescript as msc
+import time
+
+keybind_manager = ms.Keybind()
+
+def copy_position():
+    """Copy player position to clipboard."""
+    pos = msc.player_position()
+    coords = f"{pos[0]:.0f}, {pos[1]:.0f}, {pos[2]:.0f}"
+    ms.Util.set_clipboard(coords)
+    print(f"Copied position: {coords}")
+
+def take_screenshot():
+    """Trigger screenshot."""
+    print("Screenshot taken!")
+    # Could use Key class to press F2
+    ms.Key.press_key("key.keyboard.f2", True)
+    time.sleep(0.1)
+    ms.Key.press_key("key.keyboard.f2", False)
+
+# Register keybinds
+keybind_manager.set_keybind(
+    key=291,  # F2
+    callback=take_screenshot,
+    name="Screenshot",
+    category="Utility",
+    description="Takes a screenshot"
+)
+
+keybind_manager.set_keybind(
+    key=292,  # F3
+    callback=copy_position,
+    name="Copy Position",
+    category="Utility",
+    description="Copies player coordinates to clipboard"
+)
+
+print("Keybinds registered:")
+print("  F2: Take screenshot")
+print("  F3: Copy position to clipboard")
+print("\nPress Ctrl+C to exit")
+
+# Keep script running
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("\nExiting...")
+```
+
+### Multiple Action Keybinds
+
+```python
+import minescript_plus as ms
+import minescript as msc
+from minescript import render_loop
+import time
+
+keybind_manager = ms.Keybind()
+
+def quick_stats():
+    """Display quick player stats."""
+    health = ms.Player().getHealth()
+    food = ms.Player.get_food_level()
+    pos = ms.Player.get_player_block_position()
+    
+    print("=== Quick Stats ===")
+    print(f"Health: {health}/20")
+    print(f"Food: {food}/20")
+    print(f"Position: {pos[0]}, {pos[1]}, {pos[2]}")
+
+def night_vision():
+    """Toggle full brightness."""
+    options = ms.Client.get_options()
+    current = options.gamma().get()
+    
+    if current < 5.0:
+        options.gamma().set(10.0)
+        print("Night vision: ON")
+    else:
+        options.gamma().set(1.0)
+        print("Night vision: OFF")
+
+def show_title():
+    """Show custom title."""
+    with render_loop:
+        ms.Gui.set_title("Keybind Activated!")
+        ms.Gui.set_subtitle("Press F7 for stats")
+
+# Register multiple keybinds
+keybind_manager.set_keybind(
+    key=294,  # F5
+    callback=night_vision,
+    name="Night Vision",
+    description="Toggle fullbright"
+)
+
+keybind_manager.set_keybind(
+    key=295,  # F6
+    callback=show_title,
+    name="Show Title",
+    description="Display custom title"
+)
+
+keybind_manager.set_keybind(
+    key=296,  # F7
+    callback=quick_stats,
+    name="Quick Stats",
+    description="Show player statistics"
+)
+
+print("Keybinds active:")
+print("  F5: Toggle night vision")
+print("  F6: Show title message")
+print("  F7: Display quick stats")
+
+try:
+    while True:
+        time.sleep(1)
+except KeyboardInterrupt:
+    print("\nShutting down...")
+```
+
+### Dynamic Keybind Management
+
+```python
+import minescript_plus as ms
+import time
+
+keybind_manager = ms.Keybind()
+
+def action_1():
+    print("Action 1 executed!")
+
+def action_2():
+    print("Action 2 executed!")
+
+def action_3():
+    print("Action 3 executed!")
+
+# Initially set F5 to action_1
+keybind_manager.set_keybind(294, action_1, name="Action 1")
+print("F5 bound to Action 1")
+
+time.sleep(3)
+
+# Modify to action_2
+keybind_manager.modify_keybind(294, action_2, name="Action 2")
+print("F5 rebound to Action 2")
+
+time.sleep(3)
+
+# Modify to action_3
+keybind_manager.modify_keybind(294, action_3, name="Action 3")
+print("F5 rebound to Action 3")
+
+time.sleep(3)
+
+# Remove the keybind
+keybind_manager.remove_keybind(294)
+print("F5 keybind removed")
+
+print("\nDemo complete!")
+```
+
+### HUD Toggle Keybind (Fabric Only)
+
+```python
+import minescript_plus as ms
+import time
+
+keybind_manager = ms.Keybind()
+
+# Add some HUD elements
+title_id = ms.Hud.add_text("Custom HUD", x=10, y=10, shadow=True)
+health_id = ms.Hud.add_text("Health: --", x=10, y=30)
+
+hud_visible = True
+
+def toggle_hud():
+    """Toggle custom HUD visibility."""
+    global hud_visible
+    hud_visible = not hud_visible
+    ms.Hud.show_hud(hud_visible)
+    status = "visible" if hud_visible else "hidden"
+    print(f"HUD is now {status}")
+
+# Bind F8 to toggle HUD
+keybind_manager.set_keybind(
+    key=297,  # F8
+    callback=toggle_hud,
+    name="Toggle HUD",
+    description="Show/hide custom HUD elements"
+)
+
+print("Press F8 to toggle custom HUD")
+print("Press Ctrl+C to exit")
+
+try:
+    while True:
+        # Update HUD
+        player = ms.Player()
+        health = player.getHealth()
+        ms.Hud.set_text_string(health_id, f"Health: {health:.1f}/20")
+        time.sleep(0.5)
+except KeyboardInterrupt:
+    ms.Hud.clear_texts()
+    print("\nCleaned up and exiting...")
+```

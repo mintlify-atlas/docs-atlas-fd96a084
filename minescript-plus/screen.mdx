@@ -1,0 +1,89 @@
+---
+title: Screen
+description: Screen management and GUI operations
+icon: window-maximize
+---
+
+The `Screen` class provides methods for managing and interacting with Minecraft screen GUIs.
+
+<Note>
+  All methods in the Screen class must be called within the `render_loop` context.
+</Note>
+
+## wait_screen
+
+Waits for a screen with a specific name (or any screen) to become available within a short period.
+
+<ParamField path="name" type="str" default="">
+  The name of the screen to wait for. If empty, waits for any screen.
+</ParamField>
+
+<ParamField path="delay" type="int" default="500">
+  The maximum time to wait for the screen name in milliseconds.
+</ParamField>
+
+**Returns:** `bool` - True if the specified screen (or any screen if name is empty) is detected within the wait period, False otherwise.
+
+**Source:** `minescript_plus.py:597`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    # Wait for any screen to open
+    if ms.Screen.wait_screen():
+        print("A screen opened!")
+    
+    # Wait for a specific screen with custom delay
+    if ms.Screen.wait_screen("GenericContainerScreen", delay=1000):
+        print("Container screen opened!")
+```
+
+<Tip>
+  Use this method after triggering an action that opens a screen to ensure it's loaded before interacting with it.
+</Tip>
+
+## close_screen
+
+Closes the currently open screen/GUI in Minecraft.
+
+**Returns:** `None`
+
+**Source:** `minescript_plus.py:623`
+
+```python
+import minescript_plus as ms
+from minescript import render_loop
+
+with render_loop:
+    # Close the current screen
+    ms.Screen.close_screen()
+```
+
+<Warning>
+  This method properly sends a container close packet to the server and restores mouse control. Only use it when a screen is actually open.
+</Warning>
+
+## Usage Example
+
+```python
+import minescript_plus as ms
+from minescript import render_loop, press_key_bind
+import time
+
+with render_loop:
+    # Open player inventory
+    press_key_bind("key.inventory", True)
+    
+    # Wait for inventory to open
+    if ms.Screen.wait_screen():
+        print("Inventory opened successfully")
+        time.sleep(0.5)
+        
+        # Close inventory
+        ms.Screen.close_screen()
+        print("Inventory closed")
+    else:
+        print("Failed to open inventory")
+```

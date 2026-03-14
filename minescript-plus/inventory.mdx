@@ -1,0 +1,280 @@
+---
+title: "Inventory"
+description: "Programmatically interact with player inventory and container screens"
+---
+
+## Overview
+
+The `Inventory` class provides methods for clicking slots, moving items, finding items by ID or custom name, and opening containers. All methods are static and work with the currently open screen.
+
+<Note>
+  Slot IDs vary by container type. See the [Slot IDs](#slot-ids) section below.
+</Note>
+
+## Methods
+
+### click_slot
+
+Simulates a left or right mouse click on a specified inventory slot.
+
+```python
+Inventory.click_slot(slot: int, right_button: bool = False) -> bool
+```
+
+<ParamField path="slot" type="int" required>
+  The index of the inventory slot to click (0-based)
+</ParamField>
+
+<ParamField path="right_button" type="bool" default="False">
+  If True, simulates right click instead of left click
+</ParamField>
+
+**Returns**: `True` if successful, `False` if no screen is open
+
+**Example**:
+```python
+from minescript_plus import Inventory
+
+# Left-click slot 0
+Inventory.click_slot(0)
+
+# Right-click slot 5
+Inventory.click_slot(5, right_button=True)
+```
+
+---
+
+### shift_click_slot
+
+Simulates a shift-click action on a specified inventory slot (quick move).
+
+```python
+Inventory.shift_click_slot(slot: int) -> bool
+```
+
+<ParamField path="slot" type="int" required>
+  The index of the inventory slot to shift-click
+</ParamField>
+
+**Returns**: `True` if successful, `False` if no screen is open
+
+**Example**:
+```python
+# Shift-click slot 10 to quick-move item
+Inventory.shift_click_slot(10)
+```
+
+---
+
+### inventory_hotbar_swap
+
+Swaps an item between a specified inventory slot and a hotbar slot.
+
+```python
+Inventory.inventory_hotbar_swap(inv_slot: int, hotbar_slot: int) -> bool
+```
+
+<ParamField path="inv_slot" type="int" required>
+  The index of the inventory slot (9-40)
+</ParamField>
+
+<ParamField path="hotbar_slot" type="int" required>
+  The index of the hotbar slot (0-8)
+</ParamField>
+
+**Returns**: `True` if successful, `False` if no screen is open
+
+**Example**:
+```python
+# Swap item in inventory slot 15 with hotbar slot 0
+Inventory.inventory_hotbar_swap(15, 0)
+```
+
+---
+
+### open_targeted_chest
+
+Attempts to open the chest block currently targeted by the player.
+
+```python
+Inventory.open_targeted_chest() -> bool
+```
+
+**Returns**: `True` if a chest was successfully opened, `False` otherwise
+
+<Note>
+  Works with all chest types: single, double, trap, ender, and shulker boxes
+</Note>
+
+**Example**:
+```python
+from minescript_plus import Inventory, Screen
+
+if Inventory.open_targeted_chest():
+    # Wait for screen to open
+    Screen.wait_screen()
+    # Do something with the chest
+    Inventory.click_slot(0)
+```
+
+---
+
+### take_items
+
+Transfers items from specified slots to the player's inventory using quick move.
+
+```python
+Inventory.take_items(slots: list[int]) -> bool
+```
+
+<ParamField path="slots" type="list[int]" required>
+  A list of slot indices to move items from
+</ParamField>
+
+**Returns**: `True` if successful, `False` if no screen is open
+
+**Example**:
+```python
+# Take items from slots 0, 1, 2, and 3
+Inventory.take_items([0, 1, 2, 3])
+```
+
+---
+
+### find_item
+
+Finds the first inventory slot containing a specific item, optionally matching a custom name.
+
+```python
+Inventory.find_item(
+    item_id: str,
+    cust_name: str = "",
+    container: bool = False,
+    try_open: bool = False
+) -> int | None
+```
+
+<ParamField path="item_id" type="str" required>
+  The ID of the item to search for (e.g., `"minecraft:diamond"`)
+</ParamField>
+
+<ParamField path="cust_name" type="str" default="">
+  Optional custom name to match. If empty, only item ID is considered
+</ParamField>
+
+<ParamField path="container" type="bool" default="False">
+  If True, searches in the currently open container instead of player inventory
+</ParamField>
+
+<ParamField path="try_open" type="bool" default="False">
+  If True and container=True, attempts to open targeted chest before searching
+</ParamField>
+
+**Returns**: Slot ID of first matching item, or `None` if not found
+
+<Warning>
+  Requires the optional `lib_nbt v1` library. Download from [minescript.net](https://minescript.net/sdm_downloads/lib_nbt-v1/)
+</Warning>
+
+**Example**:
+```python
+# Find diamond in player inventory
+slot = Inventory.find_item("minecraft:diamond")
+if slot is not None:
+    print(f"Found diamond in slot {slot}")
+
+# Find item with custom name in open chest
+slot = Inventory.find_item("minecraft:sword", cust_name="Excalibur", container=True)
+```
+
+---
+
+### count_total
+
+Counts the total number of items with a specific item ID in the given inventory.
+
+```python
+Inventory.count_total(inventory: list[ItemStack], item_id: int) -> int
+```
+
+<ParamField path="inventory" type="list[ItemStack]" required>
+  A list of ItemStack objects (from `player_inventory()` or `container_get_items()`)
+</ParamField>
+
+<ParamField path="item_id" type="int" required>
+  The ID of the item to count
+</ParamField>
+
+**Returns**: Total count of items with the specified ID
+
+**Example**:
+```python
+from minescript import player_inventory
+from minescript_plus import Inventory
+
+inv = player_inventory()
+total = Inventory.count_total(inv, "minecraft:diamond")
+print(f"Total diamonds: {total}")
+```
+
+---
+
+### get_lore
+
+Retrieves the lore text of an item.
+
+```python
+Inventory.get_lore(item: ItemStack = None) -> str | None
+```
+
+<ParamField path="item" type="ItemStack" default="None">
+  The ItemStack to get lore from. If None, uses the item in the player's main hand
+</ParamField>
+
+**Returns**: Lore text string, or `None` if no lore exists
+
+**Example**:
+```python
+from minescript_plus import Inventory
+
+lore = Inventory.get_lore()
+if lore:
+    print(f"Item lore: {lore}")
+```
+
+## Slot IDs
+
+### Player Inventory
+- **Hotbar**: 0-8
+- **Main inventory**: 9-35
+- **Armor slots**: 36-39 (boots, leggings, chestplate, helmet)
+- **Offhand**: 40
+
+### Containers
+- **Single chest / Trap chest / Ender chest / Shulker box**: 0-26
+- **Double chest**: 0-53
+
+<Warning>
+  When a container is open, player inventory slot IDs shift. For a double chest (54 slots), the player's hotbar becomes slots 54-62, and main inventory becomes 63-89.
+</Warning>
+
+See the [Minecraft Protocol Wiki](https://minecraft.wiki/w/Java_Edition_protocol/Inventory#Chest) for details.
+
+## Complete Example
+
+```python
+from minescript_plus import Inventory, Screen
+from time import sleep
+
+# Open targeted chest
+if Inventory.open_targeted_chest():
+    Screen.wait_screen()  # Wait for GUI to appear
+    
+    # Take all items from first row (slots 0-8)
+    Inventory.take_items([0, 1, 2, 3, 4, 5, 6, 7, 8])
+    
+    sleep(0.5)
+    Screen.close_screen()
+else:
+    print("No chest targeted")
+```

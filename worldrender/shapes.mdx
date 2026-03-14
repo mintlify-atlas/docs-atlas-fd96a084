@@ -1,0 +1,517 @@
+---
+title: Shape Reference
+description: Complete API reference for all WorldRender shape types
+---
+
+## Boxes
+
+Render a wireframe cuboid between two corner points.
+
+### add_box
+
+```python
+WorldRender.add_box(x1, y1, z1, x2, y2, z2, r=255, g=255, b=255, a=255, always_on_top=True)
+```
+
+<ParamField path="x1" type="int" required>
+  X coordinate of first corner (integer grid position)
+</ParamField>
+
+<ParamField path="y1" type="int" required>
+  Y coordinate of first corner (integer grid position)
+</ParamField>
+
+<ParamField path="z1" type="int" required>
+  Z coordinate of first corner (integer grid position)
+</ParamField>
+
+<ParamField path="x2" type="int" required>
+  X coordinate of second corner (integer grid position)
+</ParamField>
+
+<ParamField path="y2" type="int" required>
+  Y coordinate of second corner (integer grid position)
+</ParamField>
+
+<ParamField path="z2" type="int" required>
+  Z coordinate of second corner (integer grid position)
+</ParamField>
+
+<ParamField path="r" type="int" default="255">
+  Red channel (0-255)
+</ParamField>
+
+<ParamField path="g" type="int" default="255">
+  Green channel (0-255)
+</ParamField>
+
+<ParamField path="b" type="int" default="255">
+  Blue channel (0-255)
+</ParamField>
+
+<ParamField path="a" type="int" default="255">
+  Alpha/opacity (0-255)
+</ParamField>
+
+<ParamField path="always_on_top" type="bool" default="true">
+  If True, renders through blocks
+</ParamField>
+
+**Returns:** `int` - Unique ID for this box
+
+### remove_box
+
+```python
+WorldRender.remove_box(x1=None, y1=None, z1=None, x2=None, y2=None, z2=None, id=None)
+```
+
+Remove a box by coordinates or by ID.
+
+### get_box_list
+
+```python
+WorldRender.get_box_list()
+```
+
+**Returns:** `dict` - Mapping of IDs to `(x1, y1, z1, x2, y2, z2, r, g, b, a, always_on_top)` tuples
+
+---
+
+## Blocks
+
+Render a wireframe around a single block at integer coordinates.
+
+### add_block
+
+```python
+WorldRender.add_block(x, y, z, r=255, g=255, b=255, a=255, always_on_top=True)
+```
+
+<ParamField path="x" type="int" required>
+  X coordinate of the block (integer grid position)
+</ParamField>
+
+<ParamField path="y" type="int" required>
+  Y coordinate of the block (integer grid position)
+</ParamField>
+
+<ParamField path="z" type="int" required>
+  Z coordinate of the block (integer grid position)
+</ParamField>
+
+<ParamField path="r" type="int" default="255">
+  Red channel (0-255)
+</ParamField>
+
+<ParamField path="g" type="int" default="255">
+  Green channel (0-255)
+</ParamField>
+
+<ParamField path="b" type="int" default="255">
+  Blue channel (0-255)
+</ParamField>
+
+<ParamField path="a" type="int" default="255">
+  Alpha/opacity (0-255)
+</ParamField>
+
+<ParamField path="always_on_top" type="bool" default="true">
+  If True, renders through blocks
+</ParamField>
+
+**Returns:** `int` - Unique ID for this block
+
+### remove_block
+
+```python
+WorldRender.remove_block(x=None, y=None, z=None, id=None)
+```
+
+Remove a block by coordinates or by ID.
+
+### get_block_list
+
+```python
+WorldRender.get_block_list()
+```
+
+**Returns:** `dict` - Mapping of IDs to `(x, y, z, r, g, b, a, always_on_top)` tuples
+
+---
+
+## Points
+
+Render a point marker at a world position.
+
+### add_point
+
+```python
+WorldRender.add_point(x, y, z, r=255, g=255, b=255, a=255, size=4.0, always_on_top=True)
+```
+
+<ParamField path="x" type="float" required>
+  X coordinate in world space
+</ParamField>
+
+<ParamField path="y" type="float" required>
+  Y coordinate in world space
+</ParamField>
+
+<ParamField path="z" type="float" required>
+  Z coordinate in world space
+</ParamField>
+
+<ParamField path="r" type="int" default="255">
+  Red channel (0-255)
+</ParamField>
+
+<ParamField path="g" type="int" default="255">
+  Green channel (0-255)
+</ParamField>
+
+<ParamField path="b" type="int" default="255">
+  Blue channel (0-255)
+</ParamField>
+
+<ParamField path="a" type="int" default="255">
+  Alpha/opacity (0-255)
+</ParamField>
+
+<ParamField path="size" type="float" default="4.0">
+  Rendered size of the point
+</ParamField>
+
+<ParamField path="always_on_top" type="bool" default="true">
+  If True, renders through blocks
+</ParamField>
+
+**Returns:** `int` - Unique ID for this point
+
+### remove_point
+
+```python
+WorldRender.remove_point(x=None, y=None, z=None, id=None)
+```
+
+Remove a point by coordinates or by ID.
+
+### get_point_list
+
+```python
+WorldRender.get_point_list()
+```
+
+**Returns:** `dict` - Mapping of IDs to `(x, y, z, r, g, b, a, size, always_on_top)` tuples
+
+---
+
+## Lines
+
+Render a line segment between two points.
+
+### add_line
+
+```python
+WorldRender.add_line(x1, y1, z1, x2, y2, z2, r=255, g=255, b=255, a=255, width=1.0, always_on_top=True)
+```
+
+<ParamField path="x1" type="float" required>
+  X coordinate of start point
+</ParamField>
+
+<ParamField path="y1" type="float" required>
+  Y coordinate of start point
+</ParamField>
+
+<ParamField path="z1" type="float" required>
+  Z coordinate of start point
+</ParamField>
+
+<ParamField path="x2" type="float" required>
+  X coordinate of end point
+</ParamField>
+
+<ParamField path="y2" type="float" required>
+  Y coordinate of end point
+</ParamField>
+
+<ParamField path="z2" type="float" required>
+  Z coordinate of end point
+</ParamField>
+
+<ParamField path="r" type="int" default="255">
+  Red channel (0-255)
+</ParamField>
+
+<ParamField path="g" type="int" default="255">
+  Green channel (0-255)
+</ParamField>
+
+<ParamField path="b" type="int" default="255">
+  Blue channel (0-255)
+</ParamField>
+
+<ParamField path="a" type="int" default="255">
+  Alpha/opacity (0-255)
+</ParamField>
+
+<ParamField path="width" type="float" default="1.0">
+  Line width
+</ParamField>
+
+<ParamField path="always_on_top" type="bool" default="true">
+  If True, renders through blocks
+</ParamField>
+
+**Returns:** `int` - Unique ID for this line
+
+### remove_line
+
+```python
+WorldRender.remove_line(x1=None, y1=None, z1=None, x2=None, y2=None, z2=None, id=None)
+```
+
+Remove a line by endpoint coordinates or by ID.
+
+### get_line_list
+
+```python
+WorldRender.get_line_list()
+```
+
+**Returns:** `dict` - Mapping of IDs to `(x1, y1, z1, x2, y2, z2, r, g, b, a, width, always_on_top)` tuples
+
+---
+
+## Arrows
+
+Render an arrow from a start point to an end point.
+
+### add_arrow
+
+```python
+WorldRender.add_arrow(x1, y1, z1, x2, y2, z2, r=255, g=255, b=255, a=255, width=1.0, always_on_top=True)
+```
+
+<ParamField path="x1" type="float" required>
+  X coordinate of arrow tail
+</ParamField>
+
+<ParamField path="y1" type="float" required>
+  Y coordinate of arrow tail
+</ParamField>
+
+<ParamField path="z1" type="float" required>
+  Z coordinate of arrow tail
+</ParamField>
+
+<ParamField path="x2" type="float" required>
+  X coordinate of arrow head
+</ParamField>
+
+<ParamField path="y2" type="float" required>
+  Y coordinate of arrow head
+</ParamField>
+
+<ParamField path="z2" type="float" required>
+  Z coordinate of arrow head
+</ParamField>
+
+<ParamField path="r" type="int" default="255">
+  Red channel (0-255)
+</ParamField>
+
+<ParamField path="g" type="int" default="255">
+  Green channel (0-255)
+</ParamField>
+
+<ParamField path="b" type="int" default="255">
+  Blue channel (0-255)
+</ParamField>
+
+<ParamField path="a" type="int" default="255">
+  Alpha/opacity (0-255)
+</ParamField>
+
+<ParamField path="width" type="float" default="1.0">
+  Shaft width
+</ParamField>
+
+<ParamField path="always_on_top" type="bool" default="true">
+  If True, renders through blocks
+</ParamField>
+
+**Returns:** `int` - Unique ID for this arrow
+
+### remove_arrow
+
+```python
+WorldRender.remove_arrow(x1=None, y1=None, z1=None, x2=None, y2=None, z2=None, id=None)
+```
+
+Remove an arrow by endpoint coordinates or by ID.
+
+### get_arrow_list
+
+```python
+WorldRender.get_arrow_list()
+```
+
+**Returns:** `dict` - Mapping of IDs to `(x1, y1, z1, x2, y2, z2, r, g, b, a, width, always_on_top)` tuples
+
+---
+
+## Circles
+
+Render a circle at a world position.
+
+### add_circle
+
+```python
+WorldRender.add_circle(x, y, z, radius, r=255, g=255, b=255, a=255, filled=False, always_on_top=True)
+```
+
+<ParamField path="x" type="float" required>
+  X coordinate of center in world space
+</ParamField>
+
+<ParamField path="y" type="float" required>
+  Y coordinate of center in world space
+</ParamField>
+
+<ParamField path="z" type="float" required>
+  Z coordinate of center in world space
+</ParamField>
+
+<ParamField path="radius" type="float" required>
+  Radius of the circle in world units
+</ParamField>
+
+<ParamField path="r" type="int" default="255">
+  Red channel (0-255)
+</ParamField>
+
+<ParamField path="g" type="int" default="255">
+  Green channel (0-255)
+</ParamField>
+
+<ParamField path="b" type="int" default="255">
+  Blue channel (0-255)
+</ParamField>
+
+<ParamField path="a" type="int" default="255">
+  Alpha/opacity (0-255)
+</ParamField>
+
+<ParamField path="filled" type="bool" default="false">
+  If True, renders a filled disc; otherwise renders an outline
+</ParamField>
+
+<ParamField path="always_on_top" type="bool" default="true">
+  If True, renders through blocks
+</ParamField>
+
+**Returns:** `int` - Unique ID for this circle
+
+### remove_circle
+
+```python
+WorldRender.remove_circle(x=None, y=None, z=None, id=None)
+```
+
+Remove a circle by center coordinates or by ID.
+
+### get_circle_list
+
+```python
+WorldRender.get_circle_list()
+```
+
+**Returns:** `dict` - Mapping of IDs to `(x, y, z, radius, r, g, b, a, filled, always_on_top)` tuples
+
+---
+
+## Rectangles
+
+Render a quadrilateral defined by four corner vertices.
+
+### add_rect
+
+```python
+WorldRender.add_rect(
+    x1, y1, z1,
+    x2, y2, z2,
+    x3, y3, z3,
+    x4, y4, z4,
+    r=255, g=255, b=255, a=255,
+    filled=False, always_on_top=True
+)
+```
+
+<ParamField path="x1, y1, z1" type="float" required>
+  First corner position
+</ParamField>
+
+<ParamField path="x2, y2, z2" type="float" required>
+  Second corner position
+</ParamField>
+
+<ParamField path="x3, y3, z3" type="float" required>
+  Third corner position
+</ParamField>
+
+<ParamField path="x4, y4, z4" type="float" required>
+  Fourth corner position
+</ParamField>
+
+<ParamField path="r" type="int" default="255">
+  Red channel (0-255)
+</ParamField>
+
+<ParamField path="g" type="int" default="255">
+  Green channel (0-255)
+</ParamField>
+
+<ParamField path="b" type="int" default="255">
+  Blue channel (0-255)
+</ParamField>
+
+<ParamField path="a" type="int" default="255">
+  Alpha/opacity (0-255)
+</ParamField>
+
+<ParamField path="filled" type="bool" default="false">
+  If True, renders a filled quad; otherwise renders an outline
+</ParamField>
+
+<ParamField path="always_on_top" type="bool" default="true">
+  If True, renders through blocks
+</ParamField>
+
+**Returns:** `int` - Unique ID for this rectangle
+
+<Note>
+Vertices should be specified in order (clockwise or counter-clockwise) to form a valid planar quad.
+</Note>
+
+### remove_rect
+
+```python
+WorldRender.remove_rect(
+    x1=None, y1=None, z1=None,
+    x2=None, y2=None, z2=None,
+    x3=None, y3=None, z3=None,
+    x4=None, y4=None, z4=None,
+    id=None
+)
+```
+
+Remove a rectangle by four corner coordinates or by ID.
+
+### get_rect_list
+
+```python
+WorldRender.get_rect_list()
+```
+
+**Returns:** `dict` - Mapping of IDs to `(x1, y1, z1, x2, y2, z2, x3, y3, z3, x4, y4, z4, r, g, b, a, filled, always_on_top)` tuples

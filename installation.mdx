@@ -1,0 +1,129 @@
+---
+title: Installation
+description: Set up Minescript Plus and all required dependencies
+---
+
+## Requirements
+
+<Note>
+The requirements differ based on which version of Minescript Plus you're using. This guide covers v0.13-alpha and newer.
+</Note>
+
+### For Minescript Plus v0.13-alpha or Newer
+
+<Steps>
+  <Step title="Minecraft Version">
+    You need Minecraft version **1.21.5** through **1.21.11**.
+  </Step>
+  
+  <Step title="Minescript Mod">
+    Install [Minescript](https://github.com/maxuser0/minescript) version **5.0b6 or newer**.
+  </Step>
+  
+  <Step title="Python">
+    Ensure you have **Python 3.10 or higher** installed on your system.
+    
+    Check your Python version:
+    ```bash
+    python --version
+    ```
+  </Step>
+  
+  <Step title="Java Module">
+    The `java` module is already included with Minescript - no additional installation needed.
+  </Step>
+  
+  <Step title="Install Mappings">
+    <Warning>
+    This step is **required** for Minescript Plus to function properly.
+    </Warning>
+    
+    If you're using Fabric, run this command in the Minecraft chat:
+    ```
+    \install_mappings
+    ```
+    
+    For more information, see the [Minescript mappings documentation](https://minescript.net/mappings).
+  </Step>
+</Steps>
+
+### Optional Dependencies
+
+<CardGroup cols={2}>
+  <Card title="Fabric API" icon="cube">
+    **Required for:** `Hud` class only
+    
+    If you plan to use custom HUD elements (text and item overlays), install the [Fabric API](https://modrinth.com/mod/fabric-api) mod.
+  </Card>
+  
+  <Card title="lib_nbt v1" icon="file-code">
+    **Required for:** `Inventory.find_item()` method only
+    
+    Download [lib_nbt v1](https://minescript.net/sdm_downloads/lib_nbt-v1/) and place it in your `/minescript` folder if you need NBT-based item searching.
+  </Card>
+</CardGroup>
+
+## Installing Minescript Plus
+
+<Steps>
+  <Step title="Download minescript_plus.py">
+    Download the `minescript_plus.py` file from the [GitHub repository](https://github.com/R4z0rX/minescript-scripts/tree/main/Minescript-Plus).
+  </Step>
+  
+  <Step title="Locate Your Minescript Folder">
+    Find your `/minescript` folder. This is where `config.txt` is located, typically:
+    
+    - **Windows:** `%APPDATA%/.minecraft/minescript/`
+    - **macOS:** `~/Library/Application Support/minecraft/minescript/`
+    - **Linux:** `~/.minecraft/minescript/`
+  </Step>
+  
+  <Step title="Place the File">
+    Copy `minescript_plus.py` into your `/minescript` folder, alongside your other scripts and `config.txt`.
+  </Step>
+</Steps>
+
+## Verifying Installation
+
+To verify that Minescript Plus is installed correctly, create a test script:
+
+```python test.py
+from minescript_plus import Player
+
+p = Player()
+print(f"Player position: {p.blockPosition().toShortString()}")
+print("Minescript Plus is working!")
+```
+
+Run this script from Minecraft:
+```
+\test
+```
+
+If you see your player position printed, the installation was successful!
+
+<Warning>
+If you see an error about missing mappings:
+
+```
+Error: No mappings found. Use this in chat first: \install_mappings
+```
+
+Make sure you ran `\install_mappings` in chat as described in Step 5 above.
+</Warning>
+
+## For Older Versions
+
+<Note>
+If you need to use Minescript Plus v0.12-alpha or earlier, the requirements are different:
+</Note>
+
+- Minecraft: Any version supported by Minescript
+- Minescript: 5.0b3 or earlier
+- Python: 3.10 or higher
+- [lib_java v2](https://minescript.net/sdm_downloads/lib_java-v2/) (required)
+- [lib_nbt v1](https://minescript.net/sdm_downloads/lib_nbt-v1/) (optional, for `Inventory.find_item()` only)
+
+## Next Steps
+
+Now that you have Minescript Plus installed, head over to the [Quick Start](/quickstart) guide to write your first script!

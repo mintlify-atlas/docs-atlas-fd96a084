@@ -1,0 +1,132 @@
+---
+title: WorldRender Overview
+description: Render debug visualizations in Minecraft 1.21.11+ using WorldRender
+---
+
+## Introduction
+
+WorldRender is a Python library for rendering debug visualizations directly in Minecraft 1.21.11+. It provides a simple API to draw shapes, text, and markers in the game world, making it ideal for debugging scripts, visualizing positions, and creating in-world guides.
+
+## Features
+
+- **Multiple shape types**: boxes, blocks, points, lines, arrows, circles, and rectangles
+- **Text rendering**: Display floating text labels at any world position
+- **Color customization**: Full RGBA color control for all shapes
+- **Automatic management**: Built-in eviction policy when max size is reached
+- **Toggle support**: Press F12 to show/hide all renders (configurable)
+- **Always-on-top rendering**: Optionally render shapes through blocks
+
+## Installation
+
+Import the WorldRender class from the worldrender module:
+
+```python
+from worldrender import WorldRender
+```
+
+## Quick Start
+
+```python
+from worldrender import WorldRender
+
+# Add a red box
+box_id = WorldRender.add_box(0, 64, 0, 5, 68, 5, r=255, g=0, b=0)
+
+# Add floating text
+text_id = WorldRender.add_text(2.5, 70, 2.5, "Hello World!", r=255, g=255, b=0)
+
+# Add a point marker
+point_id = WorldRender.add_point(0.0, 65.0, 0.0, r=0, g=255, b=0, size=6.0)
+
+# Remove by ID when done
+WorldRender.remove_box(id=box_id)
+```
+
+## Shape Types
+
+| Shape | Description | Use Case |
+|-------|-------------|----------|
+| **Box** | Cuboid defined by two corner points | Highlight regions or areas |
+| **Block** | Single block at integer coordinates | Mark specific block positions |
+| **Point** | Small marker at a position | Mark exact coordinates |
+| **Line** | Straight line between two points | Show connections or paths |
+| **Arrow** | Directional line with arrowhead | Indicate direction or flow |
+| **Circle** | Horizontal circle at Y level | Mark radius or area |
+| **Rect** | Quadrilateral with 4 corners | Custom plane shapes |
+| **Text** | Billboard text label | Annotate positions |
+
+## Color System
+
+All shapes support RGBA color values:
+
+<ParamField path="r" type="int" default="255">
+  Red channel (0-255)
+</ParamField>
+
+<ParamField path="g" type="int" default="255">
+  Green channel (0-255)
+</ParamField>
+
+<ParamField path="b" type="int" default="255">
+  Blue channel (0-255)
+</ParamField>
+
+<ParamField path="a" type="int" default="255">
+  Alpha/opacity channel (0-255, where 255 is fully opaque)
+</ParamField>
+
+## Common Parameters
+
+<ParamField path="always_on_top" type="bool" default="true">
+  When true, the shape renders through blocks and is always visible
+</ParamField>
+
+## Visibility Control
+
+Control the visibility of all WorldRender shapes:
+
+```python
+# Hide all shapes
+WorldRender.show_wr(False)
+
+# Show all shapes
+WorldRender.show_wr(True)
+
+# Enable toggle key (F12 by default)
+WorldRender.use_toggle_key(True)
+
+# Change toggle key (GLFW key code)
+WorldRender.set_toggle_key(301)  # F12
+```
+
+## ID-Based Management
+
+Every `add_*` method returns a unique ID that can be used to remove that specific shape:
+
+```python
+shape_id = WorldRender.add_box(0, 64, 0, 5, 68, 5)
+# Later...
+WorldRender.remove_box(id=shape_id)
+```
+
+Alternatively, you can remove shapes by their coordinates:
+
+```python
+WorldRender.add_box(0, 64, 0, 5, 68, 5)
+# Later...
+WorldRender.remove_box(0, 64, 0, 5, 68, 5)
+```
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Shape Reference" icon="shapes" href="/worldrender/shapes">
+    Complete API reference for all shape types
+  </Card>
+  <Card title="Text Rendering" icon="text" href="/worldrender/text">
+    Learn how to add and customize text labels
+  </Card>
+  <Card title="Examples" icon="code" href="/worldrender/examples">
+    See real-world usage examples
+  </Card>
+</CardGroup>
